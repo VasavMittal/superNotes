@@ -1,18 +1,17 @@
 const mongoose = require("mongoose");
 
 const addressSchema = new mongoose.Schema({
-  houseNo: Number,
-  sector: String,
-  area: String,
+  fullAddress: String,
   city: String,
   state: String,
   pincode: Number
 });
 
 const customerSchema = new mongoose.Schema({
-  customerId: { type: String, required: true, unique: true },
+  orderId: { type: String, required: true, unique: true },
   name: String,
   email: String,
+  contactNo: Number,
   address: addressSchema
 });
 
