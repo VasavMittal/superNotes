@@ -1,14 +1,19 @@
 const cron = require("node-cron");
-const Customer = require("../models/customer");
+const Customer = require("../models/Customer");
 const nodemailer = require("nodemailer");
 
 // Setup email transporter (use your credentials or environment variables)
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: 'smtpout.secureserver.net',
+  port: 465,
+  secure: true, // true for 465, false for 587 with TLS
   auth: {
-    user: "sunilbytes@gmail.com",        // replace with your email
-    pass: "uikekbaxizfdyygg",           // use App Password if 2FA is enabled
+    user: 'support@supernotes.info',
+    pass: 'Sunil@321'
   },
+  tls: {
+    ciphers: 'SSLv3'
+  }
 });
 
 // Helper: Check if address is empty or missing

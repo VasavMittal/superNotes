@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Customer = require("../models/customer.js");
-const fetchPaymentDetails = require("../models/paymentsDetails.js");
+const Customer = require("../models/Customer.js");
+const fetchPaymentDetails = require("../models/PaymentsDetails.js");
 
 // POST /api/customers - Save multiple customers
 router.get("/", async (req, res) => {
