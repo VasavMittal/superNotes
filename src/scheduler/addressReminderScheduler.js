@@ -1,6 +1,9 @@
 const cron = require("node-cron");
 const Customer = require("../models/Customer");
 const nodemailer = require("nodemailer");
+const axios = require("axios");
+const dotenv = require("dotenv");
+dotenv.config();
 
 // Setup email transporter (use your credentials or environment variables)
 const transporter = nodemailer.createTransport({
@@ -8,8 +11,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true, // true for 465, false for 587 with TLS
   auth: {
-    user: 'support@supernotes.info',
-    pass: 'Sunil@321'
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD
   },
   tls: {
     ciphers: 'SSLv3'
@@ -53,5 +56,16 @@ cron.schedule("0 6 * * *", async () => {
     }
   } catch (error) {
     console.error("❌ Error running address reminder job:", error);
+  }
+});
+// ⏱️ Job 2: Every 15 minutes — Health check on /health
+cron.schedule("*/15 * * * *", async () => {
+  console.log("🌡️ Running health check for /api/customers/health");
+
+  try {
+    const response = await axios.get(`${process.env.API_BASE_URL}/api/customers/health`);
+    console.log(`✅ Health check passed: ${response.data.status}`);
+  } catch (error) {
+    console.error("❌ Health check failed:", error.message);
   }
 });

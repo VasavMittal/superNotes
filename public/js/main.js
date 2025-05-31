@@ -68,6 +68,7 @@ $(document).ready(function () {
           "city":city,
           "state":state,
           "pincode":pincode,
+          "country":country
         }
       };
 

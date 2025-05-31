@@ -1,7 +1,9 @@
 const axios = require('axios');
+const dotenv = require("dotenv");
+dotenv.config();
 
-const key_id = 'rzp_live_7mkiuZOoCpB2PW';
-const key_secret = 'bhTvVPPGQZq693XhJawbhQ71';
+const key_id = process.env.PAYMENT_KEY_ID;
+const key_secret = process.env.PAYMENT_KEY_SECRET;
 
 const fetchPaymentDetails = async (payment_id) => {
   const url = `https://api.razorpay.com/v1/payments/${payment_id}`;

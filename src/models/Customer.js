@@ -4,7 +4,8 @@ const addressSchema = new mongoose.Schema({
   fullAddress: String,
   city: String,
   state: String,
-  pincode: Number
+  pincode: Number,
+  country: String
 });
 
 const customerSchema = new mongoose.Schema({

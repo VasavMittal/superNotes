@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Customer = require("../models/Customer.js");
 const fetchPaymentDetails = require("../models/PaymentsDetails.js");
+const { createShiprocketOrder } = require("../models/CreateOrder.js");
+const { getShiprocketOrderPayload } = require("../models/ShiprocketOrderPayload");
 
 // POST /api/customers - Save multiple customers
 router.get("/", async (req, res) => {
@@ -29,6 +31,9 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+router.get("/health", (req, res) => {
+  res.json({ status: "ok", message: "CustomerRoutes is healthy" });
+});
 
 router.post("/address", async (req, res) => {
   const payment_id = req.query.payment_id;
@@ -42,7 +47,7 @@ router.post("/address", async (req, res) => {
   try {
     // Fetch payment details from Razorpay
     const paymentData = await fetchPaymentDetails(payment_id);
-    const { order_id} = paymentData;
+    const { order_id, created_at, notes } = paymentData;
 
     // Find customer by orderId
     const customer = await Customer.findOne({ orderId: order_id });
@@ -59,7 +64,21 @@ router.post("/address", async (req, res) => {
     // Update address
     customer.address = addressPayload;
     await customer.save();
-
+    const orderPayload = getShiprocketOrderPayload(
+      order_id, 
+      created_at, 
+      notes.full_name?.split(" ")[0] || notes.full_name,
+      notes.full_name?.split(" ")[1] || "",
+      addressPayload.fullAddress,
+      "",
+      addressPayload.city,
+      addressPayload.pincode,
+      addressPayload.state,
+      addressPayload.country,
+      notes.email,
+      notes.whatsapp_no
+    )
+    await createShiprocketOrder(orderPayload);
     res.json({ message: "Address updated successfully", customer });
   } catch (error) {
     console.error("Update error:", error);
