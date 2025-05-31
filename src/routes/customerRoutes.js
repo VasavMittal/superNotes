@@ -6,7 +6,7 @@ const { createShiprocketOrder } = require("../models/CreateOrder.js");
 const { getShiprocketOrderPayload } = require("../models/ShiprocketOrderPayload");
 
 // POST /api/customers - Save multiple customers
-router.get("/", async (req, res) => {
+router.post("/", async (req, res) => {
   const payment_id = req.body.payment_id;
 
   if (!payment_id) {
@@ -18,6 +18,7 @@ router.get("/", async (req, res) => {
 
     const customerPayload = {
       orderId: paymentData.order_id,
+      paymentId: payment_id,
       name: paymentData.notes.full_name,
       email: paymentData.notes.email,
       contactNo: paymentData.notes.whatsapp_no,
@@ -82,6 +83,53 @@ router.post("/address", async (req, res) => {
     res.json({ message: "Address updated successfully", customer });
   } catch (error) {
     console.error("Update error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+router.post("/delivered", async (req, res) => {
+  const orderId  = req.body.order_id;
+
+  if (!orderId) {
+    return res.status(400).json({ error: "order_id is required in the request body" });
+  }
+
+  try {
+    const customer = await Customer.findOne({ orderId: orderId });
+
+    if (!customer) {
+      return res.status(404).json({ error: "Customer not found for the given order_id" });
+    }
+
+    if (!customer.email) {
+      return res.status(400).json({ error: "Customer email not found" });
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: 'smtpout.secureserver.net',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
+      },
+      tls: {
+        ciphers: 'SSLv3',
+      },
+    });
+
+    const mailOptions = {
+      from: "support@supernotes.info",
+      to: customer.email,
+      subject: "Your Order Has Been Delivered",
+      text: `Dear ${customer.name || "Customer"},\n\nWe’re happy to inform you that your order (Order ID: ${orderId}) has been successfully delivered.\n\nIf you have any questions, feel free to reach out to us.\n\nThank you for shopping with SuperNotes!\n\n– SuperNotes Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Delivered email sent to ${customer.email}`);
+
+    res.json({ message: `Delivered email sent to ${customer.email}` });
+  } catch (error) {
+    console.error("❌ Error sending delivered email:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

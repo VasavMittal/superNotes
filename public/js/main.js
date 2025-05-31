@@ -87,10 +87,11 @@ $(document).ready(function () {
         },
         error: function (err) {
           console.error(err);
+          const errorMessage = err.responseJSON?.error || 'Something went wrong while submitting the form.';
           Swal.fire({
             icon: 'error',
             title: 'Submission Failed',
-            text: 'Something went wrong while submitting the form.'
+            text: errorMessage
           });
         }
       });

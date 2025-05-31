@@ -10,6 +10,7 @@ const addressSchema = new mongoose.Schema({
 
 const customerSchema = new mongoose.Schema({
   orderId: { type: String, required: true, unique: true },
+  paymentId: String,
   name: String,
   email: String,
   contactNo: Number,
