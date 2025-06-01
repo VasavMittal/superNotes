@@ -7,7 +7,8 @@ const { getShiprocketOrderPayload } = require("../models/ShiprocketOrderPayload"
 
 // POST /api/customers - Save multiple customers
 router.post("/", async (req, res) => {
-  const payment_id = req.body.payment_id;
+  console.log("🔔 Webhook Payload:", req.body);
+  const payment_id = req.body?.payload?.payment?.entity?.id;
 
   if (!payment_id) {
     return res.status(400).json({ error: "payment_id is required in query params" });
