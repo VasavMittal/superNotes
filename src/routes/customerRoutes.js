@@ -3,7 +3,9 @@ const router = express.Router();
 const Customer = require("../models/Customer.js");
 const fetchPaymentDetails = require("../models/PaymentsDetails.js");
 const { createShiprocketOrder } = require("../models/CreateOrder.js");
-const { getShiprocketOrderPayload } = require("../models/ShiprocketOrderPayload");
+const {
+  getShiprocketOrderPayload,
+} = require("../models/ShiprocketOrderPayload");
 
 // POST /api/customers - Save multiple customers
 router.post("/", async (req, res) => {
@@ -11,7 +13,9 @@ router.post("/", async (req, res) => {
   const payment_id = req.body?.payload?.payment?.entity?.id;
 
   if (!payment_id) {
-    return res.status(400).json({ error: "payment_id is required in query params" });
+    return res
+      .status(400)
+      .json({ error: "payment_id is required in query params" });
   }
 
   try {
@@ -23,7 +27,7 @@ router.post("/", async (req, res) => {
       name: paymentData.notes.full_name,
       email: paymentData.notes.email,
       contactNo: paymentData.notes.whatsapp_no,
-      address: {}
+      address: {},
     };
 
     const customer = new Customer(customerPayload);
@@ -43,7 +47,9 @@ router.post("/address", async (req, res) => {
   const email = req.body.email;
 
   if (!payment_id || !addressPayload || !email) {
-    return res.status(400).json({ error: "payment_id, address and email are required" });
+    return res
+      .status(400)
+      .json({ error: "payment_id, address and email are required" });
   }
 
   try {
@@ -55,20 +61,24 @@ router.post("/address", async (req, res) => {
     const customer = await Customer.findOne({ orderId: order_id });
 
     if (!customer) {
-      return res.status(404).json({ error: "Customer with given orderId not found" });
+      return res
+        .status(404)
+        .json({ error: "Customer with given orderId not found" });
     }
 
     // Check email match
     if (customer.email !== email) {
-      return res.status(403).json({ error: "Email mismatch. Not authorized to update address." });
+      return res
+        .status(403)
+        .json({ error: "Email mismatch. Not authorized to update address." });
     }
 
     // Update address
     customer.address = addressPayload;
     await customer.save();
     const orderPayload = getShiprocketOrderPayload(
-      order_id, 
-      created_at, 
+      order_id,
+      created_at,
       notes.full_name?.split(" ")[0] || notes.full_name,
       notes.full_name?.split(" ")[1] || "",
       addressPayload.fullAddress,
@@ -79,7 +89,7 @@ router.post("/address", async (req, res) => {
       addressPayload.country,
       notes.email,
       notes.whatsapp_no
-    )
+    );
     await createShiprocketOrder(orderPayload);
     res.json({ message: "Address updated successfully", customer });
   } catch (error) {
@@ -88,17 +98,27 @@ router.post("/address", async (req, res) => {
   }
 });
 router.post("/delivered", async (req, res) => {
-  const orderId  = req.body.order_id;
+  // const orderId  = req.body.order_id;
+  const orderId = req.body.order_id || req.body?.data?.order_id;
+
+  console.log(
+    "📦 Shiprocket Webhook Received:",
+    JSON.stringify(req.body, null, 2)
+  );
 
   if (!orderId) {
-    return res.status(400).json({ error: "order_id is required in the request body" });
+    return res
+      .status(400)
+      .json({ error: "order_id is required in the request body" });
   }
 
   try {
     const customer = await Customer.findOne({ orderId: orderId });
 
     if (!customer) {
-      return res.status(404).json({ error: "Customer not found for the given order_id" });
+      return res
+        .status(404)
+        .json({ error: "Customer not found for the given order_id" });
     }
 
     if (!customer.email) {
@@ -106,7 +126,7 @@ router.post("/delivered", async (req, res) => {
     }
 
     const transporter = nodemailer.createTransport({
-      host: 'smtpout.secureserver.net',
+      host: "smtpout.secureserver.net",
       port: 465,
       secure: true,
       auth: {
@@ -114,7 +134,7 @@ router.post("/delivered", async (req, res) => {
         pass: process.env.SMTP_PASSWORD,
       },
       tls: {
-        ciphers: 'SSLv3',
+        ciphers: "SSLv3",
       },
     });
 
@@ -122,7 +142,9 @@ router.post("/delivered", async (req, res) => {
       from: "support@supernotes.info",
       to: customer.email,
       subject: "Your Order Has Been Delivered",
-      text: `Dear ${customer.name || "Customer"},\n\nWe’re happy to inform you that your order (Order ID: ${orderId}) has been successfully delivered.\n\nIf you have any questions, feel free to reach out to us.\n\nThank you for shopping with SuperNotes!\n\n– SuperNotes Team`,
+      text: `Dear ${
+        customer.name || "Customer"
+      },\n\nWe’re happy to inform you that your order (Order ID: ${orderId}) has been successfully delivered.\n\nIf you have any questions, feel free to reach out to us.\n\nThank you for shopping with SuperNotes!\n\n– SuperNotes Team`,
     };
 
     await transporter.sendMail(mailOptions);
