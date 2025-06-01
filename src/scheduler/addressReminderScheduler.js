@@ -30,9 +30,9 @@ const isAddressMissing = (address) => {
   );
 };
 
-// Scheduled job: runs every day at 6:00 AM
-cron.schedule("0 6 * * *", async () => {
-  console.log("🔔 Running address reminder job at 6:00 AM");
+// Scheduled job: runs every day at 11:30 AM
+cron.schedule("30 11 * * *", { timezone: "Asia/Kolkata" }, async () => {
+  console.log("🔔 Running address reminder job at 11:30 AM");
 
   try {
     const customers = await Customer.find();
