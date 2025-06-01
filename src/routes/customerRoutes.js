@@ -70,7 +70,7 @@ router.post("/address", async (req, res) => {
     }
 
     const paymentData = await fetchPaymentDetails(customer.paymentId);
-    const {order_id, notes} = paymentData;
+    const {order_id, amount, notes} = paymentData;
 
     // Update address
     customer.address = addressPayload;
@@ -87,7 +87,8 @@ router.post("/address", async (req, res) => {
       addressPayload.state,
       addressPayload.country,
       notes.email,
-      notes.whatsapp_no
+      notes.whatsapp_no,
+      amount
     );
     await createShiprocketOrder(orderPayload);
     res.json({ message: "Address updated successfully", customer });

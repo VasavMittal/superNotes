@@ -1,6 +1,6 @@
 const { formatTimestampToShiprocketDate } = require("./utils");
 
-function getShiprocketOrderPayload(order_id, order_date, billing_customer_name, billing_last_name, billing_address, billing_address_2, billing_city, billing_pincode, billing_state, billing_country, billing_email, billing_phone) {
+function getShiprocketOrderPayload(order_id, order_date, billing_customer_name, billing_last_name, billing_address, billing_address_2, billing_city, billing_pincode, billing_state, billing_country, billing_email, billing_phone, billing_amount) {
   return {
     order_id: order_id,
     order_date: formatTimestampToShiprocketDate(order_date),
@@ -32,7 +32,7 @@ function getShiprocketOrderPayload(order_id, order_date, billing_customer_name, 
         name: "Notebook",
         sku: "4D391745823",
         units: 1,
-        selling_price: 199.0,
+        selling_price: billing_amount,
         discount: 0,
         tax: 0,
         hsn: "",
@@ -43,7 +43,7 @@ function getShiprocketOrderPayload(order_id, order_date, billing_customer_name, 
     giftwrap_charges: 0,
     transaction_charges: 0,
     total_discount: 0,
-    sub_total: 199.0,
+    sub_total: billing_amount,
     length: 14.8,
     breadth: 2.5,
     height: 21,
