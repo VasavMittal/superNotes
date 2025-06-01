@@ -76,7 +76,7 @@ router.post("/address", async (req, res) => {
     customer.address = addressPayload;
     await customer.save();
     const orderPayload = getShiprocketOrderPayload(
-      order_id,
+      customer.orderId,
       new Date(),
       notes.full_name?.split(" ")[0] || notes.full_name,
       notes.full_name?.split(" ")[1] || "",
