@@ -33,7 +33,6 @@ router.post("/", async (req, res) => {
 
     const customer = new Customer(customerPayload);
     await customer.save();
-    res.redirect(`/addressSubmitPage.html?payment_id=${payment_id}`);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -43,23 +42,19 @@ router.get("/health", (req, res) => {
 });
 
 router.post("/address", async (req, res) => {
-  const payment_id = req.query.payment_id;
   const addressPayload = req.body.address;
   const email = req.body.email;
 
-  if (!payment_id || !addressPayload || !email) {
+  if (!addressPayload || !email) {
     return res
       .status(400)
-      .json({ error: "payment_id, address and email are required" });
+      .json({ error: "address and email are required" });
   }
 
   try {
-    // Fetch payment details from Razorpay
-    const paymentData = await fetchPaymentDetails(payment_id);
-    const { order_id, created_at, notes } = paymentData;
 
     // Find customer by orderId
-    const customer = await Customer.findOne({ orderId: order_id });
+    const customer = await Customer.findOne({ email: email });
 
     if (!customer) {
       return res
@@ -74,12 +69,15 @@ router.post("/address", async (req, res) => {
         .json({ error: "Email mismatch. Not authorized to update address." });
     }
 
+    const paymentData = await fetchPaymentDetails(customer.paymentId);
+    const {notes} = paymentData;
+
     // Update address
     customer.address = addressPayload;
     await customer.save();
     const orderPayload = getShiprocketOrderPayload(
       order_id,
-      created_at,
+      new Date(),
       notes.full_name?.split(" ")[0] || notes.full_name,
       notes.full_name?.split(" ")[1] || "",
       addressPayload.fullAddress,
