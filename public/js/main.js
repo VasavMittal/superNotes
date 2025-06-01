@@ -44,7 +44,7 @@ $(document).ready(function () {
     const pincode = $("#pinecode").val().trim();
     const country = $("#country").val().trim();
 
-    const fullAddress = street + " " + address2;
+    const fullAddress = address2 ? `${street}, ${address2}` : street;
     // Basic validations
     if (!name || !email || !street || !city || !state || !pincode) {
       Swal.fire({
