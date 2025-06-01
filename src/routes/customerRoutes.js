@@ -59,7 +59,7 @@ router.post("/address", async (req, res) => {
     if (!customer) {
       return res
         .status(404)
-        .json({ error: "Customer with given orderId not found" });
+        .json({ error: "Customer Order not found" });
     }
 
     // Check email match
@@ -70,7 +70,7 @@ router.post("/address", async (req, res) => {
     }
 
     const paymentData = await fetchPaymentDetails(customer.paymentId);
-    const {notes} = paymentData;
+    const {order_id, notes} = paymentData;
 
     // Update address
     customer.address = addressPayload;
