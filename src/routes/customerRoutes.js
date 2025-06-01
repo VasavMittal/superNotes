@@ -91,6 +91,7 @@ router.post("/delivered", async (req, res) => {
   const orderId  = req.body.order_id;
 
   if (!orderId) {
+    console.log("order_id is required in the request body");
     return res.status(400).json({ error: "order_id is required in the request body" });
   }
 
@@ -98,10 +99,12 @@ router.post("/delivered", async (req, res) => {
     const customer = await Customer.findOne({ orderId: orderId });
 
     if (!customer) {
+      console.log("Customer not found for the given order_id");
       return res.status(404).json({ error: "Customer not found for the given order_id" });
     }
 
     if (!customer.email) {
+      console.log("Customer email not found");
       return res.status(400).json({ error: "Customer email not found" });
     }
 
@@ -126,11 +129,11 @@ router.post("/delivered", async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Delivered email sent to ${customer.email}`);
+    console.log(`Delivered email sent to ${customer.email}`);
 
     res.json({ message: `Delivered email sent to ${customer.email}` });
   } catch (error) {
-    console.error("❌ Error sending delivered email:", error);
+    console.error("Error sending delivered email:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
