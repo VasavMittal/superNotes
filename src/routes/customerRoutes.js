@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Customer = require("../models/Customer.js");
+const nodemailer = require("nodemailer");
 const fetchPaymentDetails = require("../models/PaymentsDetails.js");
 const { createShiprocketOrder } = require("../models/CreateOrder.js");
 const {
