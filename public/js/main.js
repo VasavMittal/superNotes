@@ -31,17 +31,7 @@ $(document).ready(function () {
       e.preventDefault();
         const submitBtn = $(this).find('button[type="submit"]');
         submitBtn.prop('disabled', true);
-       const paymentId = new URLSearchParams(window.location.search).get("payment_id");
 
-      if (!paymentId) {
-         Swal.fire({
-          icon: 'warning',
-          title: 'Missing Payment Id',
-          text: 'Missing payment_id from URL.'
-        });
-        submitBtn.prop('disabled', false); // Re-enable button
-        return;
-      }
 
       const name = $("#name").val().trim();
       const email = $("#email").val().trim();
@@ -87,7 +77,7 @@ $(document).ready(function () {
 
       // Send to backend
       $.ajax({
-        url: `/api/customers/address?payment_id=${paymentId}`, // change to full URL if needed
+        url: `/api/customers/address`, // change to full URL if needed
         method: "POST",
         contentType: "application/json",
         data: JSON.stringify(payload),
