@@ -29,7 +29,8 @@ $(document).ready(function () {
     });
     $("form").on("submit", function (e) {
       e.preventDefault();
-
+        const submitBtn = $(this).find('button[type="submit"]');
+        submitBtn.prop('disabled', true);
        const paymentId = new URLSearchParams(window.location.search).get("payment_id");
 
       if (!paymentId) {
@@ -38,6 +39,8 @@ $(document).ready(function () {
           title: 'Missing Payment Id',
           text: 'Missing payment_id from URL.'
         });
+        submitBtn.prop('disabled', false); // Re-enable button
+        return;
       }
 
       const name = $("#name").val().trim();
@@ -57,6 +60,7 @@ $(document).ready(function () {
           title: 'Missing Fields',
           text: 'Please fill all mandatory fields (except Country).'
         });
+        submitBtn.prop('disabled', false); // Re-enable button
         return;
       }
 
@@ -72,6 +76,15 @@ $(document).ready(function () {
         }
       };
 
+      Swal.fire({
+        title: 'Submitting...',
+        html: 'Please wait while we submit your address.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       // Send to backend
       $.ajax({
         url: `/api/customers/address?payment_id=${paymentId}`, // change to full URL if needed
@@ -84,6 +97,7 @@ $(document).ready(function () {
             title: 'Success!',
             text: 'Form submitted successfully.'
           });
+          submitBtn.prop('disabled', false);
         },
         error: function (err) {
           console.error(err);
@@ -93,6 +107,7 @@ $(document).ready(function () {
             title: 'Submission Failed',
             text: errorMessage
           });
+          submitBtn.prop('disabled', false);
         }
       });
     });
