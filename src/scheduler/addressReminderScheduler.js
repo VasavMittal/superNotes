@@ -52,8 +52,7 @@ cron.schedule("0 6 * * *", async () => {
           customer.name || "Customer"
         },\n\nPlease add your address by clicking the link below:\n\n${
           process.env.API_BASE_URL
-        }/addressSubmitPage.html?payment_id=${
-          customer.paymentId
+        }/addressSubmitPage.html
         }\n\nThank you.`,
       };
 
