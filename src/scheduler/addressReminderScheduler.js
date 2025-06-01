@@ -48,12 +48,20 @@ cron.schedule("0 6 * * *", async () => {
         from: "support@supernotes.info",
         to: customer.email,
         subject: "Address Information Needed",
-        text: `Dear ${
-          customer.name || "Customer"
-        },\n\nPlease add your address by clicking the link below:\n\n${
-          process.env.API_BASE_URL
-        }/addressSubmitPage.html
-        }\n\nThank you.`,
+        // text: `Dear ${
+        //   customer.name || "Customer"
+        // },\n\nPlease add your address by clicking the link below:\n\n${
+        //   process.env.API_BASE_URL
+        // }/addressSubmitPage.html
+        // }\n\nThank you.`,
+        html: `
+    <p>Dear ${customer.name || "Customer"},</p>
+    <p>Please add your address by clicking the link below:</p>
+    <p><a href="${
+      process.env.API_BASE_URL
+    }/addressSubmitPage.html" target="_blank">Click here to submit your address</a></p>
+    <p>Thank you.</p>
+  `,
       };
 
       await transporter.sendMail(mailOptions);
