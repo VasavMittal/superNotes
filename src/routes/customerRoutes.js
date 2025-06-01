@@ -46,20 +46,15 @@ router.post("/address", async (req, res) => {
   const email = req.body.email;
 
   if (!addressPayload || !email) {
-    return res
-      .status(400)
-      .json({ error: "address and email are required" });
+    return res.status(400).json({ error: "address and email are required" });
   }
 
   try {
-
     // Find customer by orderId
     const customer = await Customer.findOne({ email: email });
 
     if (!customer) {
-      return res
-        .status(404)
-        .json({ error: "Customer Order not found" });
+      return res.status(404).json({ error: "Customer Order not found" });
     }
 
     // Check email match
@@ -70,7 +65,8 @@ router.post("/address", async (req, res) => {
     }
 
     const paymentData = await fetchPaymentDetails(customer.paymentId);
-    const {order_id, amount, notes} = paymentData;
+    const { order_id, amount, notes } = paymentData;
+    const final_amount = parseFloat((amount / 100).toFixed(2));
 
     // Update address
     customer.address = addressPayload;
@@ -88,7 +84,7 @@ router.post("/address", async (req, res) => {
       addressPayload.country,
       notes.email,
       notes.whatsapp_no,
-      amount
+      final_amount
     );
     await createShiprocketOrder(orderPayload);
     res.json({ message: "Address updated successfully", customer });
@@ -108,7 +104,9 @@ router.post("/delivered", async (req, res) => {
 
   if (!orderId) {
     console.log("order_id is required in the request body");
-    return res.status(400).json({ error: "order_id is required in the request body" });
+    return res
+      .status(400)
+      .json({ error: "order_id is required in the request body" });
   }
 
   try {
@@ -116,7 +114,9 @@ router.post("/delivered", async (req, res) => {
 
     if (!customer) {
       console.log("Customer not found for the given order_id");
-      return res.status(404).json({ error: "Customer not found for the given order_id" });
+      return res
+        .status(404)
+        .json({ error: "Customer not found for the given order_id" });
     }
 
     if (!customer.email) {
