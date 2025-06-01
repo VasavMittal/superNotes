@@ -7,16 +7,16 @@ dotenv.config();
 
 // Setup email transporter (use your credentials or environment variables)
 const transporter = nodemailer.createTransport({
-  host: 'smtpout.secureserver.net',
+  host: "smtpout.secureserver.net",
   port: 465,
   secure: true, // true for 465, false for 587 with TLS
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD
+    pass: process.env.SMTP_PASSWORD,
   },
   tls: {
-    ciphers: 'SSLv3'
-  }
+    ciphers: "SSLv3",
+  },
 });
 
 // Helper: Check if address is empty or missing
@@ -32,7 +32,7 @@ const isAddressMissing = (address) => {
 
 // Scheduled job: runs every day at 11:30 AM
 cron.schedule("0 6 * * *", async () => {
-  console.log("🔔 Running address reminder job at 11:30 AM");
+  console.log("Running address reminder job at 11:30 AM");
 
   try {
     const customers = await Customer.find();
@@ -48,14 +48,20 @@ cron.schedule("0 6 * * *", async () => {
         from: "support@supernotes.info",
         to: customer.email,
         subject: "Address Information Needed",
-        text: `Dear ${customer.name || "Customer"},\n\nPlease add your address by clicking the link below:\n\n${process.env.API_BASE_URL}/addressSubmitPage.html?payment_id=${customer.paymentId}\n\nThank you.`,
+        text: `Dear ${
+          customer.name || "Customer"
+        },\n\nPlease add your address by clicking the link below:\n\n${
+          process.env.API_BASE_URL
+        }/addressSubmitPage.html?payment_id=${
+          customer.paymentId
+        }\n\nThank you.`,
       };
 
       await transporter.sendMail(mailOptions);
-      console.log(`📧 Reminder sent to ${customer.email}`);
+      console.log(`Reminder sent to ${customer.email}`);
     }
   } catch (error) {
-    console.error("❌ Error running address reminder job:", error);
+    console.error("Error running address reminder job:", error);
   }
 });
 // ⏱️ Job 2: Every 15 minutes — Health check on /health
@@ -63,9 +69,11 @@ cron.schedule("*/15 * * * *", async () => {
   console.log("🌡️ Running health check for /api/customers/health");
 
   try {
-    const response = await axios.get(`${process.env.API_BASE_URL}/api/customers/health`);
-    console.log(`✅ Health check passed: ${response.data.status}`);
+    const response = await axios.get(
+      `${process.env.API_BASE_URL}/api/customers/health`
+    );
+    console.log(`Health check passed: ${response.data.status}`);
   } catch (error) {
-    console.error("❌ Health check failed:", error.message);
+    console.error("Health check failed:", error.message);
   }
 });
