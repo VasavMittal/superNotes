@@ -32,7 +32,7 @@ const isAddressMissing = (address) => {
 
 // Scheduled job: runs every day at 11:30 AM
 cron.schedule("0 6 * * *", async () => {
-  console.log("Running address reminder job at 11:30 AM");
+  console.log("Running address reminder job at 11:30 PM");
 
   try {
     const customers = await Customer.find();
