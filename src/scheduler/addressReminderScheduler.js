@@ -36,13 +36,17 @@ cron.schedule("0 6 * * *", async () => {
 
   try {
     const customers = await Customer.find();
+    for (const customer of customers) {
+      if (!customer.email || !customer.orderDetails) continue;
 
-    const customersToRemind = customers.filter((customer) =>
-      isAddressMissing(customer.address)
-    );
+      const orderWithMissingAddress = customer.orderDetails.find((order) =>
+        isAddressMissing(order.address)
+      );
 
-    for (const customer of customersToRemind) {
-      if (!customer.email) continue;
+      if (!orderWithMissingAddress) continue;
+
+      const paymentId = orderWithMissingAddress.paymentId;
+
 
       const mailOptions = {
         from: "support@supernotes.info",
@@ -57,7 +61,7 @@ cron.schedule("0 6 * * *", async () => {
 
           <p>👉 <a href="${
             process.env.API_BASE_URL
-          }/addressSubmitPage.html" target="_blank">Click to Submit Address</a></p>
+          }/addressSubmitPage.html?paymentId=${paymentId}" target="_blank">Click to Submit Address</a></p>
 
           <p>It only takes a minute!</p>
 

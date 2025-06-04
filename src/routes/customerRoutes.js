@@ -38,16 +38,33 @@ router.post("/", async (req, res) => {
   try {
     const paymentData = await fetchPaymentDetails(payment_id);
 
-    const customerPayload = {
+    const orderDetailsEntry = {
       orderId: paymentData.order_id,
       paymentId: payment_id,
-      name: paymentData.notes.full_name,
-      email: paymentData.notes.email,
-      contactNo: paymentData.notes.whatsapp_no,
       address: {},
+      studentName: "", 
+      grade: ""
     };
 
-    const customer = new Customer(customerPayload);
+    const filter = {
+      email: paymentData.notes.email,
+    };
+
+    let customer = await Customer.findOne(filter);
+
+
+    if (customer) {
+      // If customer exists, push new order
+      customer.orderDetails.push(orderDetailsEntry);
+    } else {
+      // New customer
+      customer = new Customer({
+        name: paymentData.notes.full_name,
+        email: paymentData.notes.email,
+        contactNo: paymentData.notes.whatsapp_no,
+        orderDetails: [orderDetailsEntry],
+      });
+    }
     await customer.save();
 
     // ✉️ Compose welcome email
@@ -129,9 +146,12 @@ router.get("/health", (req, res) => {
 router.post("/address", async (req, res) => {
   const addressPayload = req.body.address;
   const email = req.body.email;
+  const paymentIdFromReq = req.body.paymentId;
+  const studentName = req.body.studentName;
+  const grade = req.body.grade;
 
-  if (!addressPayload || !email) {
-    return res.status(400).json({ error: "address and email are required" });
+  if (!addressPayload || !email || !studentName || !grade) {
+    return res.status(400).json({ error: "address, email, student name and grade are required" });
   }
 
   try {
@@ -142,6 +162,26 @@ router.post("/address", async (req, res) => {
       return res.status(404).json({ error: "Customer Order not found" });
     }
 
+    let targetOrder = null;
+    if (paymentIdFromReq) {
+      targetOrder = customer.orderDetails.find(
+        (order) => order.paymentId === paymentIdFromReq
+      );
+      if (!targetOrder) {
+        return res
+          .status(404)
+          .json({ error: "Order with given paymentId not found" });
+      }
+    } else {
+      // No paymentId provided, update last order
+      if (customer.orderDetails.length === 0) {
+        return res
+          .status(400)
+          .json({ error: "No orders found to update address" });
+      }
+
+      targetOrder = customer.orderDetails[customer.orderDetails.length - 1];
+    }
     // Check email match
     if (customer.email !== email) {
       return res
@@ -149,15 +189,12 @@ router.post("/address", async (req, res) => {
         .json({ error: "Email mismatch. Not authorized to update address." });
     }
 
-    const paymentData = await fetchPaymentDetails(customer.paymentId);
+    const paymentData = await fetchPaymentDetails(targetOrder.paymentId);
     const { order_id, amount, notes } = paymentData;
     const final_amount = parseFloat((amount / 100).toFixed(2));
 
-    // Update address
-    customer.address = addressPayload;
-    await customer.save();
     const orderPayload = getShiprocketOrderPayload(
-      customer.orderId,
+      targetOrder.orderId,
       new Date(),
       notes.full_name?.split(" ")[0] || notes.full_name,
       notes.full_name?.split(" ")[1] || "",
@@ -172,6 +209,12 @@ router.post("/address", async (req, res) => {
       final_amount
     );
     await createShiprocketOrder(orderPayload);
+
+    targetOrder.address = addressPayload;
+    targetOrder.studentName = studentName;
+    targetOrder.grade = grade;
+    await customer.save();
+
     res.json({ message: "Address updated successfully", customer });
   } catch (error) {
     console.error("Update error:", error);

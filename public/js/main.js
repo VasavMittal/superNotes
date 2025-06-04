@@ -43,18 +43,22 @@ $(document).ready(function () {
     const state = $("#state").val().trim();
     const pincode = $("#pinecode").val().trim();
     const country = $("#country").val().trim();
+    const studentName = $("#studentName").val().trim();
+    const grade = $("#grade").val().trim();
 
     const fullAddress = address2 ? `${street}, ${address2}` : street;
     // Basic validations
-    if (!name || !email || !street || !city || !state || !pincode) {
+    if (!name || !email || !street || !city || !state || !pincode || !studentName || !grade) {
       Swal.fire({
         icon: "warning",
         title: "Missing Fields",
-        text: "Please fill all mandatory fields (except Country).",
+        text: "Please fill all mandatory fields.",
       });
       submitBtn.prop("disabled", false); // Re-enable button
       return;
     }
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentId = urlParams.get("paymentId");
 
     const payload = {
       name: name,
@@ -66,7 +70,12 @@ $(document).ready(function () {
         pincode: pincode,
         country: country,
       },
+      studentName: studentName,
+      grade: grade
     };
+    if (paymentId) {
+      payload.paymentId = paymentId;
+    }
 
     Swal.fire({
       title: "Submitting...",
