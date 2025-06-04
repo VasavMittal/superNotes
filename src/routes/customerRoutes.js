@@ -4,6 +4,22 @@ const Customer = require("../models/Customer.js");
 const nodemailer = require("nodemailer");
 const fetchPaymentDetails = require("../models/PaymentsDetails.js");
 const { createShiprocketOrder } = require("../models/CreateOrder.js");
+const dotenv = require("dotenv");
+dotenv.config();
+
+// Create transporter
+const transporter = nodemailer.createTransport({
+  host: "smtpout.secureserver.net",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
+  },
+  tls: {
+    ciphers: "SSLv3",
+  },
+});
 const {
   getShiprocketOrderPayload,
 } = require("../models/ShiprocketOrderPayload");
@@ -33,10 +49,79 @@ router.post("/", async (req, res) => {
 
     const customer = new Customer(customerPayload);
     await customer.save();
+
+    // ✉️ Compose welcome email
+    const mailOptions = {
+      from: "support@supernotes.info",
+      to: customer.email,
+      subject: "Welcome to Supernotes – Let’s Begin!",
+      html: `
+        <p>Hi ${customer.name || "there"},</p>
+
+        <p>Thank you for purchasing <strong>Supernotes</strong> — your first step toward helping your child plan their future with clarity and purpose.</p>
+
+        <p>At <strong>Pursue Academia</strong>, we’ve curated the Supernotes 4-in-1 Toolkit as part of our mission to make early career planning effective, affordable, and accessible to all. We’re honored to support you in this important journey.</p>
+
+        <p>📚 <strong>Start Right Away:</strong> While your Supernotes notebook is on its way, we invite you to explore our digital guide:<br/>
+        🔗 <a href="https://simplebooklet.com/careerplanningebook#page=1" target="_blank">Read the eBook</a></p>
+
+        <p>👥 <strong>Join the Parent Support WhatsApp Group:</strong> Participate in our DIY Career Planning Walkthrough Session and learn how to apply our proven framework.<br/>
+        🗓️ Sessions are held every Monday — absolutely free! <br/>
+        <a href="https://chat.whatsapp.com/KQD9BeV0m3F3YVif0uI9dK" target="_blank">Join Now</a></p>
+
+        <p>🌟 <strong>Become a Mentor:</strong> We're looking for passionate individuals to join us in this rewarding and fulfilling mission. Help shape young futures through meaningful guidance.</p>
+
+        <p>📩 Need help? Email us at <a href="mailto:support@supernotes.info">support@supernotes.info</a></p>
+
+        <br/>
+        <p>We're thrilled to be part of your journey.</p>
+
+        <p>Best regards,<br/>
+        Team Supernotes<br/>
+        <a href="https://www.supernotes.info" target="_blank">www.supernotes.info</a><br/>
+        <img src="logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
+        </p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Welcome email sent to ${customer.email}`);
+
+    res.status(200).json({ message: "Customer saved and email sent" });
   } catch (error) {
+    console.error("❌ Error in webhook handler:", error);
     res.status(500).json({ error: error.message });
   }
 });
+
+// router.post("/", async (req, res) => {
+//   console.log("🔔 Webhook Payload:", req.body);
+//   const payment_id = req.body?.payload?.payment?.entity?.id;
+
+//   if (!payment_id) {
+//     return res
+//       .status(400)
+//       .json({ error: "payment_id is required in query params" });
+//   }
+
+//   try {
+//     const paymentData = await fetchPaymentDetails(payment_id);
+
+//     const customerPayload = {
+//       orderId: paymentData.order_id,
+//       paymentId: payment_id,
+//       name: paymentData.notes.full_name,
+//       email: paymentData.notes.email,
+//       contactNo: paymentData.notes.whatsapp_no,
+//       address: {},
+//     };
+
+//     const customer = new Customer(customerPayload);
+//     await customer.save();
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 router.get("/health", (req, res) => {
   res.json({ status: "ok", message: "CustomerRoutes is healthy" });
 });
