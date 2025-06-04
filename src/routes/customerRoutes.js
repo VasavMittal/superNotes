@@ -238,13 +238,24 @@ router.post("/delivered", async (req, res) => {
   }
 
   try {
-    const customer = await Customer.findOne({ orderId: orderId });
+    const customer = await Customer.findOne({ "orderDetails.orderId": orderId });
 
     if (!customer) {
       console.log("Customer not found for the given order_id");
       return res
         .status(404)
         .json({ error: "Customer not found for the given order_id" });
+    }
+
+    const order = customer.orderDetails.find(
+      (od) => od.orderId === orderId
+    );
+
+    if (!order) {
+      console.log("Order not found in customer's orderDetails");
+      return res
+        .status(404)
+        .json({ error: "Order not found in customer's orderDetails" });
     }
 
     if (!customer.email) {
