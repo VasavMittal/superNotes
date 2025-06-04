@@ -32,7 +32,7 @@ const isAddressMissing = (address) => {
 
 // Scheduled job: runs every day at 11:30 AM
 cron.schedule("0 6 * * *", async () => {
-  console.log("Running address reminder job at 11:30 PM");
+  console.log("Running address reminder job at 11:30 AM");
 
   try {
     const customers = await Customer.find();
@@ -46,7 +46,6 @@ cron.schedule("0 6 * * *", async () => {
       if (!orderWithMissingAddress) continue;
 
       const paymentId = orderWithMissingAddress.paymentId;
-
 
       const mailOptions = {
         from: "support@supernotes.info",
