@@ -42,8 +42,8 @@ router.post("/", async (req, res) => {
       orderId: paymentData.order_id,
       paymentId: payment_id,
       address: {},
-      studentName: "", 
-      grade: ""
+      studentName: "",
+      grade: "",
     };
 
     const filter = {
@@ -51,7 +51,6 @@ router.post("/", async (req, res) => {
     };
 
     let customer = await Customer.findOne(filter);
-
 
     if (customer) {
       // If customer exists, push new order
@@ -96,7 +95,9 @@ router.post("/", async (req, res) => {
         <p>Best regards,<br/>
         Team Supernotes<br/>
         <a href="https://www.supernotes.info" target="_blank">www.supernotes.info</a><br/>
-        <img src="logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
+        <img src="${
+          process.env.API_BASE_URL
+        }/public/img/logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
         </p>
       `,
     };
@@ -151,7 +152,9 @@ router.post("/address", async (req, res) => {
   const grade = req.body.grade;
 
   if (!addressPayload || !email || !studentName || !grade) {
-    return res.status(400).json({ error: "address, email, student name and grade are required" });
+    return res
+      .status(400)
+      .json({ error: "address, email, student name and grade are required" });
   }
 
   try {
@@ -238,7 +241,9 @@ router.post("/delivered", async (req, res) => {
   }
 
   try {
-    const customer = await Customer.findOne({ "orderDetails.orderId": orderId });
+    const customer = await Customer.findOne({
+      "orderDetails.orderId": orderId,
+    });
 
     if (!customer) {
       console.log("Customer not found for the given order_id");
@@ -247,9 +252,7 @@ router.post("/delivered", async (req, res) => {
         .json({ error: "Customer not found for the given order_id" });
     }
 
-    const order = customer.orderDetails.find(
-      (od) => od.orderId === orderId
-    );
+    const order = customer.orderDetails.find((od) => od.orderId === orderId);
 
     if (!order) {
       console.log("Order not found in customer's orderDetails");
