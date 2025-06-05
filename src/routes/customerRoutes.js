@@ -38,6 +38,7 @@ router.post("/", async (req, res) => {
   try {
     const paymentData = await fetchPaymentDetails(payment_id);
 
+    console.log("Payment Data :", paymentData);
     const orderDetailsEntry = {
       orderId: paymentData.order_id,
       paymentId: payment_id,
@@ -52,7 +53,7 @@ router.post("/", async (req, res) => {
 
     let customer = await Customer.findOne(filter);
 
-
+    console.log(customer);
     if (customer) {
       // If customer exists, push new order
       customer.orderDetails.push(orderDetailsEntry);
