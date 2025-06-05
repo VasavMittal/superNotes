@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,169 +9,99 @@
   <script src="/js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
     body {
       font-family: 'Inter', sans-serif;
     }
   </style>
-  <meta name="facebook-domain-verification" content="2iq5yhfefunj4mdtyuypn9l3dhizai" />
-  
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1660919924546974');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1660919924546974&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
 
+  <meta name="facebook-domain-verification" content="2iq5yhfefunj4mdtyuypn9l3dhizai" />
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1660919924546974');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1660919924546974&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
 </head>
-<body class="bg-[#fff1e8] min-h-screen flex items-center justify-center relative overflow-auto p-4">
-  <!-- Decorative shapes top-left -->
+
+<body class="bg-[#fff1e8] min-h-screen flex justify-center relative overflow-y-auto pt-[5%] pb-[5%] p-4">
+
+  <!-- Decorative shapes -->
   <div class="absolute top-12 left-12 flex space-x-2">
     <div class="w-12 h-12 rounded-tr-[40%] rounded-br-[40%] bg-[#8a82f7] opacity-40"></div>
     <div class="w-12 h-12 rounded-tr-[40%] rounded-br-[40%] border-2 border-[#8a82f7] bg-transparent -ml-6"></div>
   </div>
-  <!-- Decorative shape small top-left -->
   <div class="absolute top-36 left-16 w-8 h-8 rounded-tr-[40%] rounded-br-[40%] border-2 border-[#8a82f7] bg-transparent"></div>
-
-  <!-- Decorative shapes bottom-right -->
   <div class="absolute bottom-16 right-16 flex space-x-2">
     <div class="w-12 h-12 rounded-tr-[40%] rounded-br-[40%] border-2 border-[#8a82f7] bg-transparent"></div>
     <div class="w-12 h-12 rounded-tr-[40%] rounded-br-[40%] bg-[#8a82f7] opacity-40 -ml-6"></div>
   </div>
-  <!-- Decorative shapes top-right -->
   <div class="absolute top-16 right-16 flex space-x-2">
     <div class="w-10 h-10 rounded-tr-[40%] rounded-br-[40%] bg-[#f56f5f] opacity-40"></div>
     <div class="w-10 h-10 rounded-tr-[40%] rounded-br-[40%] border-2 border-[#f56f5f] bg-transparent -ml-5"></div>
   </div>
-  <!-- Decorative shape bottom-left -->
   <div class="absolute bottom-24 left-20 w-10 h-10 rounded-tr-[40%] rounded-br-[40%] bg-[#f56f5f] opacity-40"></div>
 
-  <!-- Form container with shadow offset -->
+  <!-- Form Container -->
   <div class="relative max-w-lg w-full">
-    <div
-      class="absolute top-4 left-4 w-full h-full rounded-2xl bg-[#4b44f7] -z-10"
-      aria-hidden="true"
-    ></div>
-    <form
-      class="bg-white rounded-2xl p-6 sm:p-8 space-y-6 shadow-none"
-      aria-label="Address form"
-    >
+    <!-- ✅ Fixed background shadow -->
+    <div class="absolute inset-0 translate-x-1 translate-y-1 w-full rounded-2xl bg-[#4b44f7] -z-10" aria-hidden="true"></div>
+
+    <!-- Form Starts -->
+    <form class="bg-white rounded-2xl p-6 sm:p-8 space-y-6 shadow-none" aria-label="Address form">
       <h2 class="text-[#4b44f7] font-bold text-xl sm:text-2xl text-center">Address Form</h2>
-      <input
-        id="name"
-        type="text"
-        placeholder="Name*"
-        required
-        class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-        aria-label="Name"
-      />
-      <input
-        id="email"
-        type="email"
-        placeholder="Email*"
-        required
-        class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-        aria-label="Email"
-      />
+
+      <input id="name" type="text" placeholder="Name*" required
+        class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="Name" />
+      <input id="email" type="email" placeholder="Email*" required
+        class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="Email" />
 
       <fieldset class="border border-[#b7b7d1] rounded-xl p-4 space-y-4">
         <legend class="text-[#b7b7d1] font-semibold px-2">Address</legend>
-        <input
-          id="address"
-          type="text"
-          placeholder="Street Address*"
-          required
-          class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-          aria-label="Street Address"
-        />
-        <input
-          id="address2"
-          type="text"
-          placeholder="Address Line 2"
-          class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-          aria-label="Address Line 2"
-        />
+        <input id="address" type="text" placeholder="Street Address*" required
+          class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="Street Address" />
+        <input id="address2" type="text" placeholder="Address Line 2"
+          class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="Address Line 2" />
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <input
-            id="city"
-            type="text"
-            placeholder="City/district"
-            required
-            class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-            aria-label="City"
-            disabled
-          />
-          <input
-            id="state"
-            type="text"
-            placeholder="State"
-            required
-            class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-            aria-label="State"
-            disabled
-          />
-          <input
-            id="pinecode"
-            type="text"
-            placeholder="Pincode Code*"
-            required
-            class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-            aria-label="Pine Code"
-          />
-          <input
-            id="country"
-            type="text"
-            placeholder="Country"
-            class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-            aria-label="Country"
-            disabled
-          />
+          <input id="city" type="text" placeholder="City/district" required disabled
+            class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="City" />
+          <input id="state" type="text" placeholder="State" required disabled
+            class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="State" />
+          <input id="pinecode" type="text" placeholder="Pincode Code*" required
+            class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="Pine Code" />
+          <input id="country" type="text" placeholder="Country" disabled
+            class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="Country" />
         </div>
       </fieldset>
-       <fieldset class="border border-[#b7b7d1] rounded-xl p-4 space-y-4">
+
+      <fieldset class="border border-[#b7b7d1] rounded-xl p-4 space-y-4">
         <legend class="text-[#b7b7d1] font-semibold px-2">Student Details</legend>
-        <input
-          id="studentName"
-          type="text"
-          placeholder="studentName*"
-          required
-          class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-          aria-label="Student Name"
-        />
-        <input
-          id="grade"
-          type="text"
-          placeholder="Grade(to assign a mentor)*"
-          required
-          class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent"
-          aria-label="Grade"
-        />
+        <input id="studentName" type="text" placeholder="Student Name*" required
+          class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="Student Name" />
+        <input id="grade" type="text" placeholder="Grade (to assign a mentor)*" required
+          class="w-full border border-[#b7b7d1] rounded-xl py-3 px-4 text-[#000000] placeholder-[#b7b7d1] focus:outline-none focus:ring-2 focus:ring-[#4b44f7] focus:border-transparent" aria-label="Grade" />
       </fieldset>
 
-       <div class="flex justify-center">
-  <button
-    type="submit"
-    class="mt-2 bg-[#f56f5f] text-white font-bold rounded-full py-3 px-8 text-sm hover:bg-[#e65a4f] transition-colors w-full sm:w-auto"
-  >
-    Submit Form
-  </button>
-</div>
+      <div class="flex justify-center">
+        <button type="submit"
+          class="mt-2 bg-[#f56f5f] text-white font-bold rounded-full py-3 px-8 text-sm hover:bg-[#e65a4f] transition-colors w-full sm:w-auto">
+          Submit Form
+        </button>
+      </div>
     </form>
   </div>
 </body>
