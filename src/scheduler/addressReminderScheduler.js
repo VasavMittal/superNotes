@@ -75,7 +75,9 @@ cron.schedule("0 6 * * *", async () => {
           <br/>
           <p>Best regards,<br/>
           Team Supernotes<br/>
-          <img src="logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
+          <img src="${
+            process.env.API_BASE_URL
+          }/public/img/logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
           </p>
         `,
       };
