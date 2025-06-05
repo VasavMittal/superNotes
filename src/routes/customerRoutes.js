@@ -98,7 +98,7 @@ router.post("/", async (req, res) => {
         <a href="https://www.supernotes.info" target="_blank">www.supernotes.info</a><br/>
         <img src="${
           process.env.API_BASE_URL
-        }/public/img/logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
+        }/img/logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
         </p>
       `,
     };
