@@ -64,7 +64,6 @@ router.post("/", async (req, res) => {
       });
     }
     await customer.save();
-
     // ✉️ Compose welcome email
     const mailOptions = {
       from: "support@supernotes.info",
@@ -87,8 +86,12 @@ router.post("/", async (req, res) => {
         <p>🌟 <strong>Become a Mentor:</strong> We're looking for passionate individuals to join us in this rewarding and fulfilling mission. Help shape young futures through meaningful guidance.</p>
 
         <p>📩 Need help? Email us at <a href="mailto:support@supernotes.info">support@supernotes.info</a></p>
-
+        
+        <p>👉 <a href="${
+          process.env.API_BASE_URL
+        }/addressSubmitPage.html?paymentId=${payment_id}" target="_blank">Click to Submit Address</a></p>
         <br/>
+        
         <p>We're thrilled to be part of your journey.</p>
 
         <p>Best regards,<br/>
@@ -96,7 +99,7 @@ router.post("/", async (req, res) => {
         <a href="https://www.supernotes.info" target="_blank">www.supernotes.info</a><br/>
         <img src="${
           process.env.API_BASE_URL
-        }/public/img/logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
+        }/img/logo.png" alt="Supernotes Logo" width="120" style="margin-top: 10px;" />
         </p>
       `,
     };
