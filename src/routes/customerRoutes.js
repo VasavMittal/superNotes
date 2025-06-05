@@ -53,10 +53,6 @@ router.post("/", async (req, res) => {
 
     let customer = await Customer.findOne(filter);
 
-<<<<<<< HEAD
-=======
-    console.log(customer);
->>>>>>> 9306e4977961a5ef86e63846c2f12bc68d63872b
     if (customer) {
       // If customer exists, push new order
       customer.orderDetails.push(orderDetailsEntry);
