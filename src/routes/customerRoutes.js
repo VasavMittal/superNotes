@@ -26,7 +26,6 @@ const {
 
 // POST /api/customers - Save multiple customers
 router.post("/", async (req, res) => {
-  console.log("🔔 Webhook Payload:", req.body);
   const payment_id = req.body?.payload?.payment?.entity?.id;
 
   if (!payment_id) {
@@ -38,7 +37,6 @@ router.post("/", async (req, res) => {
   try {
     const paymentData = await fetchPaymentDetails(payment_id);
 
-    console.log("Payment Data :", paymentData);
     const orderDetailsEntry = {
       orderId: paymentData.order_id,
       paymentId: payment_id,
@@ -113,34 +111,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// router.post("/", async (req, res) => {
-//   console.log("🔔 Webhook Payload:", req.body);
-//   const payment_id = req.body?.payload?.payment?.entity?.id;
-
-//   if (!payment_id) {
-//     return res
-//       .status(400)
-//       .json({ error: "payment_id is required in query params" });
-//   }
-
-//   try {
-//     const paymentData = await fetchPaymentDetails(payment_id);
-
-//     const customerPayload = {
-//       orderId: paymentData.order_id,
-//       paymentId: payment_id,
-//       name: paymentData.notes.full_name,
-//       email: paymentData.notes.email,
-//       contactNo: paymentData.notes.whatsapp_no,
-//       address: {},
-//     };
-
-//     const customer = new Customer(customerPayload);
-//     await customer.save();
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
 router.get("/health", (req, res) => {
   res.json({ status: "ok", message: "CustomerRoutes is healthy" });
 });
