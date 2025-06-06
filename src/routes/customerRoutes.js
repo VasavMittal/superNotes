@@ -68,6 +68,7 @@ router.post("/", async (req, res) => {
     const mailOptions = {
       from: "support@supernotes.info",
       to: customer.email,
+      cc: "support@supernotes.info",
       subject: "Welcome to Supernotes – Let’s Begin!",
       html: `
         <p>Hi ${customer.name || "there"},</p>
@@ -125,7 +126,7 @@ router.post("/address", async (req, res) => {
   const studentName = req.body.studentName;
   const grade = req.body.grade;
 
-  if (!addressPayload || !email || !studentName || !grade) {
+  if (!addressPayload || !email) {
     return res
       .status(400)
       .json({ error: "address, email, student name and grade are required" });

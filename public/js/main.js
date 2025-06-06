@@ -48,7 +48,7 @@ $(document).ready(function () {
 
     const fullAddress = address2 ? `${street}, ${address2}` : street;
     // Basic validations
-    if (!name || !email || !street || !city || !state || !pincode || !studentName || !grade) {
+    if (!name || !email || !street || !city || !state || !pincode) {
       Swal.fire({
         icon: "warning",
         title: "Missing Fields",
@@ -71,7 +71,7 @@ $(document).ready(function () {
         country: country,
       },
       studentName: studentName,
-      grade: grade
+      grade: grade,
     };
     if (paymentId) {
       payload.paymentId = paymentId;
