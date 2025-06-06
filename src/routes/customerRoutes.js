@@ -141,6 +141,7 @@ router.post("/address", async (req, res) => {
     }
 
     let targetOrder = null;
+    
     if (paymentIdFromReq) {
       targetOrder = customer.orderDetails.find(
         (order) => order.paymentId === paymentIdFromReq
@@ -170,6 +171,22 @@ router.post("/address", async (req, res) => {
     const paymentData = await fetchPaymentDetails(targetOrder.paymentId);
     const { order_id, amount, notes } = paymentData;
     const final_amount = parseFloat((amount / 100).toFixed(2));
+
+    const isAddressMissing = (address) => {
+      return (
+        !address ||
+        !address.fullAddress ||
+        !address.city ||
+        !address.state ||
+        !address.pincode
+      );
+    };
+
+    if (!isAddressMissing(targetOrder.address)) {
+      return res
+        .status(400)
+        .json({ error: "Address already exists for this order." });
+    }
 
     const orderPayload = getShiprocketOrderPayload(
       targetOrder.orderId,
