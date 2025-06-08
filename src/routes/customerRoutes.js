@@ -78,17 +78,17 @@ router.post("/", async (req, res) => {
         <p>At <strong>Pursue Academia</strong>, we’ve curated the Supernotes 4-in-1 Toolkit as part of our mission to make early career planning effective, affordable, and accessible to all. We’re honored to support you in this important journey.</p>
 
         <p>📚 <strong>Start Right Away:</strong> While your Supernotes notebook is on its way, we invite you to explore our digital guide:<br/>
-        🔗 <a href="https://simplebooklet.com/careerplanningebook#page=1" target="_blank">Read the eBook</a></p>
+        🔗 <a href="https://simplebooklet.com/careerplanningebook#page=1" target="_blank">Read the eBook</a> -<strong> The Essential of Career Planning.</strong></p>
 
         <p>👥 <strong>Join the Parent Support WhatsApp Group:</strong> Participate in our DIY Career Planning Walkthrough Session and learn how to apply our proven framework.<br/>
-        🗓️ Sessions are held every Monday — absolutely free! <br/>
+        🗓️ Sessions are held every Monday — absolutely free! <strong>What Next?</strong><br/>
         <a href="https://chat.whatsapp.com/KQD9BeV0m3F3YVif0uI9dK" target="_blank">Join Now</a></p>
 
         <p>🌟 <strong>Become a Mentor:</strong> We're looking for passionate individuals to join us in this rewarding and fulfilling mission. Help shape young futures through meaningful guidance.</p>
 
         <p>📩 Need help? Email us at <a href="mailto:support@supernotes.info">support@supernotes.info</a></p>
         
-        <p>👉 <a href="${
+        <p>👉 In case if you missed to submit the address - <a href="${
           process.env.API_BASE_URL
         }/addressSubmitPage.html?paymentId=${payment_id}" target="_blank">Click to Submit Address</a></p>
         <br/>
