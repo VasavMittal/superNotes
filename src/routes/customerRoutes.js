@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
         
         <p>👉 In case if you missed to submit the address - <a href="${
           process.env.API_BASE_URL
-        }/addressSubmitPage.html?paymentId=${payment_id}" target="_blank">Click to Submit Address</a></p>
+        }/thankyou/address.html?paymentId=${payment_id}" target="_blank">Click to Submit Address</a></p>
         <br/>
         
         <p>We're thrilled to be part of your journey.</p>
@@ -141,7 +141,7 @@ router.post("/address", async (req, res) => {
     }
 
     let targetOrder = null;
-    
+
     if (paymentIdFromReq) {
       targetOrder = customer.orderDetails.find(
         (order) => order.paymentId === paymentIdFromReq

@@ -60,7 +60,7 @@ cron.schedule("0 6 * * *", async () => {
 
           <p>👉 <a href="${
             process.env.API_BASE_URL
-          }/addressSubmitPage.html?paymentId=${paymentId}" target="_blank">Click to Submit Address</a></p>
+          }/thankyou/address.html?paymentId=${paymentId}" target="_blank">Click to Submit Address</a></p>
 
           <p>It only takes a minute!</p>
 
