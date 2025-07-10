@@ -3,6 +3,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 async function getShiprocketToken() {
+  console.log("ENV EMAIL:", process.env.AUTH_EMAIL);
+  console.log("ENV URL:", process.env.AUTH_URL);
+  console.log("ENV PASSWORD:", process.env.AUTH_PASSWORD);
   const url = process.env.AUTH_URL;
   const credentials = {
     email: process.env.AUTH_EMAIL,

@@ -4,6 +4,7 @@ const Customer = require("../models/Customer.js");
 const nodemailer = require("nodemailer");
 const fetchPaymentDetails = require("../models/PaymentsDetails.js");
 const { createShiprocketOrder } = require("../models/CreateOrder.js");
+const { getShiprocketToken } = require("../models/ShiprocketAuth.js");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -117,6 +118,11 @@ router.post("/", async (req, res) => {
 
 router.get("/health", (req, res) => {
   res.json({ status: "ok", message: "CustomerRoutes is healthy" });
+});
+
+router.get("/test-shiprocket", async (req, res) => {
+  const token = await getShiprocketToken();
+  res.json({ status: "ok", message: "CustomerRoutes is healthy", token });
 });
 
 router.post("/address", async (req, res) => {
