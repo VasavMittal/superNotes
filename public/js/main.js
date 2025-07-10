@@ -88,7 +88,7 @@ $(document).ready(function () {
 
     // Send to backend
     $.ajax({
-      url: `/api/customers/address`, // change to full URL if needed
+      url: `https://supernotes.onrender.com/api/customers/address`, // change to full URL if needed
       method: "POST",
       contentType: "application/json",
       data: JSON.stringify(payload),
