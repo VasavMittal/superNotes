@@ -25,7 +25,6 @@ async function getShiprocketToken() {
       "Error fetching token:",
       error.response ? error.response.data : error.message
     );
-    throw new Error("Shiprocket token generation failed");
   }
 }
 module.exports = { getShiprocketToken };
