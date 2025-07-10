@@ -126,6 +126,7 @@ router.get("/test-shiprocket", async (req, res) => {
 });
 
 router.post("/address", async (req, res) => {
+  console.log("/address hit");
   const addressPayload = req.body.address;
   const email = req.body.email;
   const paymentIdFromReq = req.body.paymentId;
