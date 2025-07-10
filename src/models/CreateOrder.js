@@ -15,6 +15,7 @@ async function createShiprocketOrder(orderPayload) {
       },
     });
     console.log("Order created successfully:", response.data);
+    return response;
   } catch (error) {
     console.error(
       "Error creating order:",
