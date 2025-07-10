@@ -143,6 +143,7 @@ router.post("/address", async (req, res) => {
     const customer = await Customer.findOne({ email: email });
 
     if (!customer) {
+      console.log("❌ Customer not found");
       return res.status(404).json({ error: "Customer Order not found" });
     }
 
@@ -153,6 +154,7 @@ router.post("/address", async (req, res) => {
         (order) => order.paymentId === paymentIdFromReq
       );
       if (!targetOrder) {
+        console.log("❌ Order with paymentId not found");
         return res
           .status(404)
           .json({ error: "Order with given paymentId not found" });
@@ -209,7 +211,16 @@ router.post("/address", async (req, res) => {
       notes.whatsapp_no,
       final_amount
     );
-    await createShiprocketOrder(orderPayload);
+    console.log("📦 Shiprocket Payload:", JSON.stringify(orderPayload, null, 2));
+    try {
+      console.log("🚀 Calling createShiprocketOrder...");
+      const shiprocketResult = await createShiprocketOrder(orderPayload);
+      console.log("✅ Shiprocket Order Created", shiprocketResult);
+    } catch (shipErr) {
+      console.error("❌ Shiprocket API failed:", shipErr.response?.data || shipErr.message);
+      return res.status(502).json({ error: "Failed to create Shiprocket order" });
+    }
+    //await createShiprocketOrder(orderPayload);
 
     targetOrder.address = addressPayload;
     targetOrder.studentName = studentName;

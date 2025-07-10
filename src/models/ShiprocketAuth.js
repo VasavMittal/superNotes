@@ -3,15 +3,14 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 async function getShiprocketToken() {
-  console.log("ENV EMAIL:", process.env.AUTH_EMAIL);
-  console.log("ENV URL:", process.env.AUTH_URL);
-  console.log("ENV PASSWORD:", process.env.AUTH_PASSWORD);
   const url = process.env.AUTH_URL;
   const credentials = {
     email: process.env.AUTH_EMAIL,
     password: process.env.AUTH_PASSWORD,
   };
-
+  console.log("🔐 Fetching Shiprocket token...");
+  console.log("➡️ AUTH_URL:", url);
+  console.log("➡️ AUTH_EMAIL:", credentials.email);
   try {
     const response = await axios.post(url, credentials, {
       headers: {
@@ -26,6 +25,7 @@ async function getShiprocketToken() {
       "Error fetching token:",
       error.response ? error.response.data : error.message
     );
+    throw new Error("Shiprocket token generation failed");
   }
 }
 module.exports = { getShiprocketToken };
