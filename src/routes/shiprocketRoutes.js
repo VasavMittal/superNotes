@@ -11,6 +11,12 @@ router.post("/create", async (req, res) => {
     return res.status(400).json({ error: "Invalid payload" });
   }
 
+  // ⭐ Console the payload before calling Shiprocket
+  console.log(
+    "📦 Payload being sent to Shiprocket:",
+    JSON.stringify(orderPayload, null, 2)
+  );
+
   try {
     const data = await createShiprocketOrder(orderPayload);
     return res.json({ success: true, data });
@@ -19,12 +25,10 @@ router.post("/create", async (req, res) => {
       "Shiprocket create failed:",
       err.response?.data || err.message
     );
-    return res
-      .status(502)
-      .json({
-        error: "Failed to create Shiprocket order",
-        details: err.response?.data || err.message,
-      });
+    return res.status(502).json({
+      error: "Failed to create Shiprocket order",
+      details: err.response?.data || err.message,
+    });
   }
 });
 
