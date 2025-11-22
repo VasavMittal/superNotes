@@ -25,6 +25,7 @@ async function getShiprocketToken() {
       "Error fetching token:",
       error.response ? error.response.data : error.message
     );
+    throw error; // propagate error to caller
   }
 }
 module.exports = { getShiprocketToken };

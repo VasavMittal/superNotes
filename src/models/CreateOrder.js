@@ -15,12 +15,14 @@ async function createShiprocketOrder(orderPayload) {
       },
     });
     console.log("Order created successfully:", response.data);
-    return response;
+    return response.data; // return response body for callers
   } catch (error) {
     console.error(
       "Error creating order:",
       error.response ? error.response.data : error.message
     );
+    throw error; // rethrow so callers can handle failures
   }
 }
+
 module.exports = { createShiprocketOrder };
