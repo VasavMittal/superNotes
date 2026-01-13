@@ -308,4 +308,91 @@ router.post("/delivered", async (req, res) => {
   }
 });
 
+// POST /api/send_partner - Send partner notification email
+router.post("/send_partner", async (req, res) => {
+  console.log("/send_partner hit");
+  
+  const {
+    to,
+    name,
+    phone,
+    email,
+    refcode,
+    studentName,
+    studentGrade,
+    street,
+    city,
+    state,
+    pincode,
+    country,
+    message
+  } = req.body;
+
+  // Validate required fields
+  if (!to || !name) {
+    return res.status(400).json({ 
+      error: "Required fields missing: 'to' and 'name' are mandatory" 
+    });
+  }
+
+  try {
+    // Compose partner notification email
+    const mailOptions = {
+      from: "support@supernotes.info",
+      to: to,
+      cc: "support@supernotes.info",
+      subject: `New Toolkit Request from ${name}`,
+      html: `
+        <h2>New Toolkit Request Received</h2>
+        
+        <h3>Contact Information:</h3>
+        <ul>
+          <li><strong>Name:</strong> ${name}</li>
+          <li><strong>Phone:</strong> ${phone || 'Not provided'}</li>
+          <li><strong>Email:</strong> ${email || 'Not provided'}</li>
+          <li><strong>Reference Code:</strong> ${refcode || 'Not provided'}</li>
+        </ul>
+
+        <h3>Student Information:</h3>
+        <ul>
+          <li><strong>Student Name:</strong> ${studentName || 'Not provided'}</li>
+          <li><strong>Grade:</strong> ${studentGrade || 'Not provided'}</li>
+        </ul>
+
+        <h3>Address Details:</h3>
+        <ul>
+          <li><strong>Street:</strong> ${street || 'Not provided'}</li>
+          <li><strong>City:</strong> ${city || 'Not provided'}</li>
+          <li><strong>State:</strong> ${state || 'Not provided'}</li>
+          <li><strong>Pincode:</strong> ${pincode || 'Not provided'}</li>
+          <li><strong>Country:</strong> ${country || 'Not provided'}</li>
+        </ul>
+
+        ${message ? `<h3>Message:</h3><p>${message}</p>` : ''}
+
+        <hr/>
+        <p style="color: #666; font-size: 12px;">
+          This email was sent from the Supernotes Partner Portal.<br/>
+          Team Supernotes<br/>
+          <a href="https://www.supernotes.info" target="_blank">www.supernotes.info</a>
+        </p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Partner notification email sent to ${to}`);
+
+    res.status(200).json({ 
+      success: true,
+      message: "Partner notification email sent successfully" 
+    });
+  } catch (error) {
+    console.error("❌ Error sending partner notification email:", error);
+    res.status(500).json({ 
+      error: "Failed to send email",
+      details: error.message 
+    });
+  }
+});
+
 module.exports = router;
