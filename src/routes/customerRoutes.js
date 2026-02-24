@@ -152,7 +152,7 @@ router.post("/address", async (req, res) => {
 
     if (paymentIdFromReq) {
       targetOrder = customer.orderDetails.find(
-        (order) => order.paymentId === paymentIdFromReq
+        (order) => order.paymentId === paymentIdFromReq,
       );
       if (!targetOrder) {
         console.log("❌ Order with paymentId not found");
@@ -210,16 +210,24 @@ router.post("/address", async (req, res) => {
       addressPayload.country,
       notes.email,
       notes.whatsapp_no,
-      final_amount
+      final_amount,
     );
-    console.log("📦 Shiprocket Payload:", JSON.stringify(orderPayload, null, 2));
+    console.log(
+      "📦 Shiprocket Payload:",
+      JSON.stringify(orderPayload, null, 2),
+    );
     try {
       console.log("🚀 Calling createShiprocketOrder...");
       const shiprocketResult = await createShiprocketOrder(orderPayload);
       console.log("✅ Shiprocket Order Created", shiprocketResult);
     } catch (shipErr) {
-      console.error("❌ Shiprocket API failed:", shipErr.response?.data || shipErr.message);
-      return res.status(502).json({ error: "Failed to create Shiprocket order" });
+      console.error(
+        "❌ Shiprocket API failed:",
+        shipErr.response?.data || shipErr.message,
+      );
+      return res
+        .status(502)
+        .json({ error: "Failed to create Shiprocket order" });
     }
     //await createShiprocketOrder(orderPayload);
 
@@ -240,7 +248,7 @@ router.post("/delivered", async (req, res) => {
 
   console.log(
     "📦 Shiprocket Webhook Received:",
-    JSON.stringify(req.body, null, 2)
+    JSON.stringify(req.body, null, 2),
   );
 
   if (!orderId) {
@@ -311,9 +319,10 @@ router.post("/delivered", async (req, res) => {
 // POST /api/send_partner - Send partner notification email
 router.post("/send_partner", async (req, res) => {
   console.log("/send_partner hit");
-  
+
   const {
     to,
+    cc,
     name,
     phone,
     email,
@@ -325,13 +334,13 @@ router.post("/send_partner", async (req, res) => {
     state,
     pincode,
     country,
-    message
+    message,
   } = req.body;
 
   // Validate required fields
   if (!to || !name) {
-    return res.status(400).json({ 
-      error: "Required fields missing: 'to' and 'name' are mandatory" 
+    return res.status(400).json({
+      error: "Required fields missing: 'to' and 'name' are mandatory",
     });
   }
 
@@ -340,7 +349,7 @@ router.post("/send_partner", async (req, res) => {
     const mailOptions = {
       from: "support@supernotes.info",
       to: to,
-      cc: "support@supernotes.info",
+      ...(cc && { cc }),
       subject: `New Toolkit Request from ${name}`,
       html: `
         <h2>New Toolkit Request Received</h2>
@@ -348,27 +357,27 @@ router.post("/send_partner", async (req, res) => {
         <h3>Contact Information:</h3>
         <ul>
           <li><strong>Name:</strong> ${name}</li>
-          <li><strong>Phone:</strong> ${phone || 'Not provided'}</li>
-          <li><strong>Email:</strong> ${email || 'Not provided'}</li>
-          <li><strong>Reference Code:</strong> ${refcode || 'Not provided'}</li>
+          <li><strong>Phone:</strong> ${phone || "Not provided"}</li>
+          <li><strong>Email:</strong> ${email || "Not provided"}</li>
+          <li><strong>Reference Code:</strong> ${refcode || "Not provided"}</li>
         </ul>
 
         <h3>Student Information:</h3>
         <ul>
-          <li><strong>Student Name:</strong> ${studentName || 'Not provided'}</li>
-          <li><strong>Grade:</strong> ${studentGrade || 'Not provided'}</li>
+          <li><strong>Student Name:</strong> ${studentName || "Not provided"}</li>
+          <li><strong>Grade:</strong> ${studentGrade || "Not provided"}</li>
         </ul>
 
         <h3>Address Details:</h3>
         <ul>
-          <li><strong>Street:</strong> ${street || 'Not provided'}</li>
-          <li><strong>City:</strong> ${city || 'Not provided'}</li>
-          <li><strong>State:</strong> ${state || 'Not provided'}</li>
-          <li><strong>Pincode:</strong> ${pincode || 'Not provided'}</li>
-          <li><strong>Country:</strong> ${country || 'Not provided'}</li>
+          <li><strong>Street:</strong> ${street || "Not provided"}</li>
+          <li><strong>City:</strong> ${city || "Not provided"}</li>
+          <li><strong>State:</strong> ${state || "Not provided"}</li>
+          <li><strong>Pincode:</strong> ${pincode || "Not provided"}</li>
+          <li><strong>Country:</strong> ${country || "Not provided"}</li>
         </ul>
 
-        ${message ? `<h3>Message:</h3><p>${message}</p>` : ''}
+        ${message ? `<h3>Message:</h3><p>${message}</p>` : ""}
 
         <hr/>
         <p style="color: #666; font-size: 12px;">
@@ -382,15 +391,15 @@ router.post("/send_partner", async (req, res) => {
     await transporter.sendMail(mailOptions);
     console.log(`✅ Partner notification email sent to ${to}`);
 
-    res.status(200).json({ 
+    res.status(200).json({
       success: true,
-      message: "Partner notification email sent successfully" 
+      message: "Partner notification email sent successfully",
     });
   } catch (error) {
     console.error("❌ Error sending partner notification email:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to send email",
-      details: error.message 
+      details: error.message,
     });
   }
 });
