@@ -404,4 +404,83 @@ router.post("/send_partner", async (req, res) => {
   }
 });
 
+// POST /api/customers/partner_lead – Send partner lead notification email
+router.post("/partner_lead", async (req, res) => {
+  console.log("/partner_lead hit");
+
+  const {
+    to,
+    parentName,
+    studentName,
+    grade,
+    whatsappNo,
+    email,
+    partner_name,
+    partner_email,
+  } = req.body;
+
+  if (!parentName || !email) {
+    return res.status(400).json({
+      error: "Required fields missing: 'parentName' and 'email' are mandatory",
+    });
+  }
+
+  try {
+    const mailOptions = {
+      from: "support@supernotes.info",
+      to: to || partner_email || "support@supernotes.info",
+      cc: "support@supernotes.info",
+      subject: `New Inquiry – ${parentName} (Student: ${studentName || "N/A"})`,
+      html: `
+        <h2>New Partner Page Inquiry</h2>
+
+        <h3>Parent Information:</h3>
+        <ul>
+          <li><strong>Parent Name:</strong> ${parentName}</li>
+          <li><strong>WhatsApp No.:</strong> ${whatsappNo || "Not provided"}</li>
+          <li><strong>Email:</strong> ${email}</li>
+        </ul>
+
+        <h3>Student Information:</h3>
+        <ul>
+          <li><strong>Student Name:</strong> ${studentName || "Not provided"}</li>
+          <li><strong>Grade:</strong> ${grade || "Not provided"}</li>
+        </ul>
+
+        ${
+          partner_name || partner_email
+            ? `
+        <h3>Partner Details:</h3>
+        <ul>
+          <li><strong>Partner Name:</strong> ${partner_name || "N/A"}</li>
+          <li><strong>Partner Email:</strong> ${partner_email || "N/A"}</li>
+        </ul>`
+            : ""
+        }
+
+        <hr/>
+        <p style="color: #666; font-size: 12px;">
+          This email was sent from the Supernotes Partner Portal.<br/>
+          Team Supernotes<br/>
+          <a href="https://www.supernotes.info" target="_blank">www.supernotes.info</a>
+        </p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Partner lead email sent for ${parentName} (${email})`);
+
+    res.status(200).json({
+      success: true,
+      message: "Partner lead email sent successfully",
+    });
+  } catch (error) {
+    console.error("❌ Error sending partner lead email:", error);
+    res.status(500).json({
+      error: "Failed to send email",
+      details: error.message,
+    });
+  }
+});
+
 module.exports = router;
