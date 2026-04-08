@@ -24,6 +24,10 @@ const transporter = nodemailer.createTransport({
 const {
   getShiprocketOrderPayload,
 } = require("../models/ShiprocketOrderPayload");
+const { sendWhatsApp } = require("../whatsapp");
+
+const TEMPLATE_1 = "career_starter_kit_invitee";
+const TEMPLATE_URL = "https://midd.me/F3R7";
 
 // POST /api/customers - Save multiple customers
 router.post("/", async (req, res) => {
@@ -469,6 +473,13 @@ router.post("/partner_lead", async (req, res) => {
 
     await transporter.sendMail(mailOptions);
     console.log(`✅ Partner lead email sent for ${parentName} (${email})`);
+
+    if (whatsappNo) {
+      const phone = whatsappNo.toString().replace(/[^0-9+]/g, "");
+      await sendWhatsApp(phone, TEMPLATE_1, [TEMPLATE_URL]);
+    } else {
+      console.log(`⚠️  No whatsappNo provided — skipping Template 1 for ${email}`);
+    }
 
     res.status(200).json({
       success: true,

@@ -11,23 +11,79 @@ const auth = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: "v4", auth });
 
+async function getFirstSheetTitle(spreadsheetId) {
+  const res = await sheets.spreadsheets.get({ spreadsheetId });
+  return res.data.sheets?.[0]?.properties?.title || null;
+}
+
 async function getSheetData(spreadsheetId, range) {
-  const res = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range,
-  });
-  return res.data.values || [];
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range,
+    });
+    return res.data.values || [];
+  } catch (error) {
+    console.error(
+      `Error getting sheet data for range ${range}:`,
+      error.message,
+    );
+
+    if (error.message.includes("Unable to parse range")) {
+      const firstTitle = await getFirstSheetTitle(spreadsheetId);
+      if (firstTitle) {
+        const fallbackRange = range.includes("!")
+          ? `${firstTitle}!${range.split("!").pop()}`
+          : `${firstTitle}!${range}`;
+        console.warn(`Falling back to first sheet title: ${fallbackRange}`);
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: fallbackRange,
+        });
+        return res.data.values || [];
+      }
+    }
+
+    throw error;
+  }
 }
 
 async function updateCell(spreadsheetId, range, value) {
-  await sheets.spreadsheets.values.update({
-    spreadsheetId,
-    range,
-    valueInputOption: "RAW",
-    requestBody: {
-      values: [[value]],
-    },
-  });
+  try {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range,
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [[value]],
+      },
+    });
+  } catch (error) {
+    console.error(`Error updating cell ${range}:`, error.message);
+
+    if (error.message.includes("Unable to parse range")) {
+      const firstTitle = await getFirstSheetTitle(spreadsheetId);
+      if (firstTitle) {
+        const fallbackRange = range.includes("!")
+          ? `${firstTitle}!${range.split("!").pop()}`
+          : `${firstTitle}!${range}`;
+        console.warn(
+          `Retrying update with first sheet title: ${fallbackRange}`,
+        );
+        await sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: fallbackRange,
+          valueInputOption: "RAW",
+          requestBody: {
+            values: [[value]],
+          },
+        });
+        return;
+      }
+    }
+
+    throw error;
+  }
 }
 
 module.exports = { getSheetData, updateCell };

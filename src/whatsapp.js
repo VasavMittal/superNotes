@@ -1,21 +1,31 @@
 const axios = require("axios");
 
-const TOKEN =
-  "EAAUJSAf6SZBIBRIN7Fdb6eflmHvvXzFMVR461Eq6BBiyD8jVIUQrcJPHjMn1Gi3Qz0eNl3gmSrDJznQAfTZBAEyyYWFUtLueGJelSDu6E1sabtHRYZBkYFcCp3mZBXmAwPZBiiDxqkkV67ZCtBY8X2zzu75elAKJnuiYDZAjXnmAwgkjNivULDvtWg0GqG0ta0e2KanGCq7rFxd1GwYUKEdMGBSCJ8fLl97ePuqtbMoiP6102ZAIFKNo8TI0fRSbcku9sPCZBOawO7dKpvjH4uZAqlrSLA";
-const PHONE_ID = "1063790500152703";
+const TOKEN = process.env.WHATSAPP_TOKEN;
+const PHONE_ID = process.env.WHATSAPP_PHONE_ID;
 
-async function sendWhatsApp(to, templateName) {
+async function sendWhatsApp(to, templateName, params = []) {
   try {
+    const template = {
+      name: templateName,
+      language: { code: "en" },
+    };
+
+    if (params.length > 0) {
+      template.components = [
+        {
+          type: "body",
+          parameters: params.map((p) => ({ type: "text", text: p })),
+        },
+      ];
+    }
+
     await axios.post(
       `https://graph.facebook.com/v18.0/${PHONE_ID}/messages`,
       {
         messaging_product: "whatsapp",
         to: to,
         type: "template",
-        template: {
-          name: templateName,
-          language: { code: "en" },
-        },
+        template,
       },
       {
         headers: {
@@ -26,8 +36,10 @@ async function sendWhatsApp(to, templateName) {
     );
 
     console.log(`✅ Sent ${templateName} to ${to}`);
+    return true;
   } catch (err) {
     console.log("❌ WhatsApp Error:", err.response?.data || err.message);
+    return false;
   }
 }
 
