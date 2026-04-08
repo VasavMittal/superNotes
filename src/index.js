@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const customerRoutes = require("./routes/customerRoutes");
 const shiprocketRoutes = require("./routes/shiprocketRoutes");
+const whatsappWebhookRoutes = require("./routes/whatsappWebhookRoutes");
 const cors = require("cors");
 const path = require("path");
 
@@ -40,6 +41,7 @@ mongoose
 // Use routes
 app.use("/api/customers", customerRoutes);
 app.use("/api/shiprocket", shiprocketRoutes);
+app.use("/api/whatsapp/webhook", whatsappWebhookRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

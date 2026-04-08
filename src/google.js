@@ -86,4 +86,19 @@ async function updateCell(spreadsheetId, range, value) {
   }
 }
 
-module.exports = { getSheetData, updateCell };
+async function appendRow(spreadsheetId, values) {
+  try {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: "Sheet1!A1",
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      requestBody: { values: [values] },
+    });
+  } catch (error) {
+    console.error("Error appending row:", error.message);
+    throw error;
+  }
+}
+
+module.exports = { getSheetData, updateCell, appendRow };
