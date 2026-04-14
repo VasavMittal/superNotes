@@ -27,6 +27,7 @@ const {
 const { sendWhatsApp } = require("../whatsapp");
 
 const TEMPLATE_1 = "career_starter_kit_invitee";
+const TEMPLATE_1_IMAGE = "https://supernotes.onrender.com/img/1.png";
 const TEMPLATE_URL = "https://midd.me/F3R7";
 
 // POST /api/customers - Save multiple customers
@@ -476,7 +477,7 @@ router.post("/partner_lead", async (req, res) => {
 
     if (whatsappNo) {
       const phone = whatsappNo.toString().replace(/[^0-9+]/g, "");
-      await sendWhatsApp(phone, TEMPLATE_1, [TEMPLATE_URL]);
+      await sendWhatsApp(phone, TEMPLATE_1, [TEMPLATE_URL], TEMPLATE_1_IMAGE);
     } else {
       console.log(`⚠️  No whatsappNo provided — skipping Template 1 for ${email}`);
     }

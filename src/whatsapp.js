@@ -3,20 +3,31 @@ const axios = require("axios");
 const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_ID = process.env.WHATSAPP_PHONE_ID;
 
-async function sendWhatsApp(to, templateName, params = []) {
+async function sendWhatsApp(to, templateName, params = [], headerImageUrl = null) {
   try {
     const template = {
       name: templateName,
       language: { code: "en" },
     };
 
+    const components = [];
+
+    if (headerImageUrl) {
+      components.push({
+        type: "header",
+        parameters: [{ type: "image", image: { link: headerImageUrl } }],
+      });
+    }
+
     if (params.length > 0) {
-      template.components = [
-        {
-          type: "body",
-          parameters: params.map((p) => ({ type: "text", text: p })),
-        },
-      ];
+      components.push({
+        type: "body",
+        parameters: params.map((p) => ({ type: "text", text: p })),
+      });
+    }
+
+    if (components.length > 0) {
+      template.components = components;
     }
 
     await axios.post(
