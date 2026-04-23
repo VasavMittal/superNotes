@@ -60,7 +60,7 @@ function parseMoment(value) {
   );
 }
 
-cron.schedule("*/90 * * * * *", async () => {
+cron.schedule("*/3 * * * *", async () => {
   if (!SHEET_PARTNER_ID || !SHEET_ASSESSMENT_ID || !SHEET_SUPERNOTES_ID) {
     console.error(
       "Missing required sheet config: SHEET_PARTNER_ID, SHEET_ASSESSMENT_ID, SHEET_SUPERNOTES_ID",
