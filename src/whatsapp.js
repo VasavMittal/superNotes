@@ -3,7 +3,7 @@ const axios = require("axios");
 const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_ID = process.env.WHATSAPP_PHONE_ID;
 
-async function sendWhatsApp(to, templateName, params = [], headerImageUrl = null) {
+async function sendWhatsApp(to, templateName, params = [], headerMediaUrl = null, headerMediaType = "image") {
   try {
     const template = {
       name: templateName,
@@ -12,10 +12,10 @@ async function sendWhatsApp(to, templateName, params = [], headerImageUrl = null
 
     const components = [];
 
-    if (headerImageUrl) {
+    if (headerMediaUrl) {
       components.push({
         type: "header",
-        parameters: [{ type: "image", image: { link: headerImageUrl } }],
+        parameters: [{ type: headerMediaType, [headerMediaType]: { link: headerMediaUrl } }],
       });
     }
 

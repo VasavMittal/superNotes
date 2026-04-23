@@ -15,13 +15,15 @@ const SUPERNOTES_RANGE = "Sheet1!A2:Z";
 // when the website form is submitted — not by this scheduler.
 const TEMPLATE_2 = "career_project_completion_next_steps";
 const TEMPLATE_2_URL = "https://empower.supernotes.info";
+const TEMPLATE_2_VIDEO = "https://supernotes.onrender.com/img/career_project_completion.mp4";
 const TEMPLATE_3 = "career_project_reminder_24h";
-const TEMPLATE_3_URL = "https://midd.me/F3R7";
+const TEMPLATE_3_URL = "https://simplebooklet.com/project1essentials";
 const TEMPLATE_3_SUPPORT_URL = "https://chat.whatsapp.com/KQD9BeV0m3F3YVif0uI9dK";
 const TEMPLATE_3_IMAGE = "https://supernotes.onrender.com/img/2.png";
 const TEMPLATE_4 = "career_project_reminder_48h";
+const TEMPLATE_4_IMAGE = "https://supernotes.onrender.com/img/career_project_reminder_48h.png";
 const TEMPLATE_5 = "address_reminder_72h";
-const TEMPLATE_5_IMAGE = "https://supernotes.onrender.com/img/3.png";
+const TEMPLATE_5_VIDEO = "https://supernotes.onrender.com/img/address_reminder_72h.mp4";
 
 // Partner Supernotes column indices (0-based):
 // A=0 datetime, E=4 whatsapp, F=5 email, J=9 status, K=10 R1, L=11 R2, M=12 R3
@@ -144,7 +146,7 @@ cron.schedule("*/90 * * * * *", async () => {
         console.log(
           `✅ Row ${rowNumber} [${email}]: Assessment completed — sending Template 2 (${TEMPLATE_2}) to ${phone}`,
         );
-        const sent = await sendWhatsApp(phone, TEMPLATE_2, [TEMPLATE_2_URL], TEMPLATE_3_IMAGE);
+        const sent = await sendWhatsApp(phone, TEMPLATE_2, [TEMPLATE_2_URL], TEMPLATE_2_VIDEO, "video");
         if (sent) {
           await updateCell(SHEET_PARTNER_ID, `Sheet1!J${rowNumber}`, "1");
           console.log(
@@ -181,7 +183,7 @@ cron.schedule("*/90 * * * * *", async () => {
         console.log(
           `🔔 Row ${rowNumber} [${email}]: ${hoursSinceSubmission}h since submission, no assessment — sending Reminder 2 (${TEMPLATE_4}) to ${phone}`,
         );
-        const sent = await sendWhatsApp(phone, TEMPLATE_4, [TEMPLATE_3_URL, TEMPLATE_3_SUPPORT_URL], TEMPLATE_3_IMAGE);
+        const sent = await sendWhatsApp(phone, TEMPLATE_4, [TEMPLATE_3_URL, TEMPLATE_3_SUPPORT_URL], TEMPLATE_4_IMAGE);
         if (sent) {
           await updateCell(SHEET_PARTNER_ID, `Sheet1!L${rowNumber}`, "1");
           console.log(
@@ -207,7 +209,7 @@ cron.schedule("*/90 * * * * *", async () => {
             console.log(
               `🔔 Row ${rowNumber} [${email}]: ${hoursSinceAssessment}h since assessment, Supernotes New not filled — sending Final Reminder (${TEMPLATE_5}) to ${phone}`,
             );
-            const sent = await sendWhatsApp(phone, TEMPLATE_5, [], TEMPLATE_5_IMAGE);
+            const sent = await sendWhatsApp(phone, TEMPLATE_5, [], TEMPLATE_5_VIDEO, "video");
             if (sent) {
               await updateCell(SHEET_PARTNER_ID, `Sheet1!M${rowNumber}`, "1");
               console.log(
