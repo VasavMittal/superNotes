@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const customerRoutes = require("./routes/customerRoutes");
 const shiprocketRoutes = require("./routes/shiprocketRoutes");
 const whatsappWebhookRoutes = require("./routes/whatsappWebhookRoutes");
+const quotationRoutes = require("./routes/quotationRoutes");
 const cors = require("cors");
 const path = require("path");
 
@@ -19,7 +20,7 @@ function normalizePhone(phone) {
 }
 
 const app = express();
-app.use(express.json({ limit: "2mb" }));
+app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the public folder (assuming public is sibling to src)
@@ -42,6 +43,7 @@ mongoose
 app.use("/api/customers", customerRoutes);
 app.use("/api/shiprocket", shiprocketRoutes);
 app.use("/api/whatsapp/webhook", whatsappWebhookRoutes);
+app.use("/api/quotations", quotationRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
