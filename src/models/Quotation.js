@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const conn = mongoose.createConnection(process.env.HANDPIKD_MONGO_URI);
+conn.on("error", (err) => console.error("Handpikd MongoDB error:", err));
 
 const quotationItemSchema = new mongoose.Schema(
   {

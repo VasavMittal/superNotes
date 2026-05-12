@@ -18,7 +18,6 @@ async function getShiprocketToken() {
       },
     });
     const token = response.data.token;
-    console.log("Authentication token:", token);
     return token;
   } catch (error) {
     console.error(
