@@ -17,10 +17,12 @@ router.post('/admin', requireAdmin, async (req, res) => {
   try {
     const { userId, orderNumber, description, amount, status, notes, invoicePdf, invoiceName } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });
+    const { orderDate } = req.body;
     const order = await PortalOrder.create({
       userId, orderNumber: orderNumber || '', description: description || '',
       amount: parseFloat(amount) || 0, status: status || 'pending',
-      notes: notes || '', invoicePdf: invoicePdf || null, invoiceName: invoiceName || null
+      notes: notes || '', invoicePdf: invoicePdf || null, invoiceName: invoiceName || null,
+      createdAt: orderDate ? new Date(orderDate) : new Date()
     });
     res.status(201).json({ id: order._id });
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -29,12 +31,13 @@ router.post('/admin', requireAdmin, async (req, res) => {
 // Admin: update order
 router.put('/admin/:id', requireAdmin, async (req, res) => {
   try {
-    const { orderNumber, description, amount, status, notes, invoicePdf, invoiceName } = req.body;
+    const { orderNumber, description, amount, status, notes, invoicePdf, invoiceName, orderDate } = req.body;
     const update = {
       orderNumber: orderNumber || '', description: description || '',
       amount: parseFloat(amount) || 0, status: status || 'pending',
       notes: notes || '', updatedAt: new Date()
     };
+    if (orderDate) update.createdAt = new Date(orderDate);
     if (invoicePdf !== undefined) { update.invoicePdf = invoicePdf; update.invoiceName = invoiceName; }
     await PortalOrder.findByIdAndUpdate(req.params.id, update);
     res.json({ success: true });
