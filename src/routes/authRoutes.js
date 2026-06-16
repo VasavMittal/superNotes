@@ -1,7 +1,9 @@
-const express  = require('express');
-const bcrypt   = require('bcryptjs');
+const express    = require('express');
+const bcrypt     = require('bcryptjs');
+const jwt        = require('jsonwebtoken');
 const PortalUser = require('../models/PortalUser');
-const router   = express.Router();
+const { requireAuth, SECRET } = require('../middleware/portalAuth');
+const router     = express.Router();
 
 // Only allowed when zero portal users exist
 router.get('/needs-setup', async (req, res) => {
@@ -31,22 +33,23 @@ router.post('/login', async (req, res) => {
     if (!user) return res.status(401).json({ error: 'Invalid email or password' });
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: 'Invalid email or password' });
-    req.session.userId  = user._id.toString();
-    req.session.isAdmin = user.isAdmin || false;
-    res.json({ isAdmin: user.isAdmin || false, name: user.name });
+    const token = jwt.sign(
+      { userId: user._id.toString(), isAdmin: user.isAdmin || false },
+      SECRET(),
+      { expiresIn: '7d' }
+    );
+    res.json({ token, isAdmin: user.isAdmin || false, name: user.name });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/logout', (req, res) => {
-  req.session.destroy(() => res.json({ success: true }));
-});
+// Logout is handled client-side (delete token from localStorage)
+router.post('/logout', (req, res) => res.json({ success: true }));
 
-router.get('/me', async (req, res) => {
-  if (!req.session?.userId) return res.status(401).json({ error: 'Unauthorized' });
+router.get('/me', requireAuth, async (req, res) => {
   try {
-    const user = await PortalUser.findById(req.session.userId).select('-passwordHash');
+    const user = await PortalUser.findById(req.user.userId).select('-passwordHash');
     if (!user) return res.status(404).json({ error: 'Not found' });
-    res.json({ ...user.toObject(), isAdmin: req.session.isAdmin });
+    res.json({ ...user.toObject(), isAdmin: req.user.isAdmin });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

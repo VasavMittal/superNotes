@@ -1,15 +1,7 @@
 const express     = require('express');
 const PortalOrder = require('../models/PortalOrder');
+const { requireAuth, requireAdmin } = require('../middleware/portalAuth');
 const router      = express.Router();
-
-function requireAuth(req, res, next) {
-  if (!req.session?.userId) return res.status(401).json({ error: 'Unauthorized' });
-  next();
-}
-function requireAdmin(req, res, next) {
-  if (!req.session?.isAdmin) return res.status(403).json({ error: 'Forbidden' });
-  next();
-}
 
 // ── Admin: list orders (optionally filtered by userId) ──────────
 router.get('/admin', requireAdmin, async (req, res) => {
@@ -61,7 +53,7 @@ router.delete('/admin/:id', requireAdmin, async (req, res) => {
 router.get('/', requireAuth, async (req, res) => {
   try {
     const orders = await PortalOrder
-      .find({ userId: req.session.userId }, { invoicePdf: 0 })
+      .find({ userId: req.user.userId }, { invoicePdf: 0 })
       .sort({ createdAt: -1 }).lean();
     res.json(orders);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -72,7 +64,7 @@ router.get('/:id/invoice', requireAuth, async (req, res) => {
   try {
     const order = await PortalOrder.findById(req.params.id);
     if (!order) return res.status(404).json({ error: 'Not found' });
-    if (!req.session.isAdmin && order.userId.toString() !== req.session.userId)
+    if (!req.user.isAdmin && order.userId.toString() !== req.user.userId)
       return res.status(403).json({ error: 'Forbidden' });
     if (!order.invoicePdf) return res.status(404).json({ error: 'No invoice attached' });
     res.json({ invoicePdf: order.invoicePdf, invoiceName: order.invoiceName });

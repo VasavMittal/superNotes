@@ -2,14 +2,9 @@ const express    = require('express');
 const bcrypt     = require('bcryptjs');
 const PortalUser  = require('../models/PortalUser');
 const PortalOrder = require('../models/PortalOrder');
+const { requireAdmin } = require('../middleware/portalAuth');
 const router     = express.Router();
 
-function requireAdmin(req, res, next) {
-  if (!req.session?.isAdmin) return res.status(403).json({ error: 'Forbidden' });
-  next();
-}
-
-// List all users with their order counts
 router.get('/', requireAdmin, async (req, res) => {
   try {
     const users  = await PortalUser.find().select('-passwordHash').sort({ createdAt: -1 }).lean();
@@ -20,7 +15,6 @@ router.get('/', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Create user
 router.post('/', requireAdmin, async (req, res) => {
   try {
     const { name, email, phone, company, password, points, isAdmin } = req.body;
@@ -36,7 +30,6 @@ router.post('/', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Update user
 router.put('/:id', requireAdmin, async (req, res) => {
   try {
     const { name, email, phone, company, password, points, isAdmin } = req.body;
@@ -51,7 +44,6 @@ router.put('/:id', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Delete user + their orders
 router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     await PortalUser.findByIdAndDelete(req.params.id);
