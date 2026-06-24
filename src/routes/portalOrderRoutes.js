@@ -4,6 +4,18 @@ const PortalUser  = require('../models/PortalUser');
 const { requireAuth, requireAdmin } = require('../middleware/portalAuth');
 const router      = express.Router();
 
+function getFinancialYearRange(date) {
+  const d = new Date(date);
+  const month = d.getMonth() + 1;
+  const year  = d.getFullYear();
+  const fyStart = month >= 4 ? year : year - 1;
+  return {
+    start: new Date(fyStart, 3, 1),
+    end:   new Date(fyStart + 1, 2, 31, 23, 59, 59, 999),
+    label: `${fyStart}-${String(fyStart + 1).slice(2)}`
+  };
+}
+
 // Admin: overview / analytics
 router.get('/admin/overview', requireAdmin, async (req, res) => {
   try {
@@ -63,6 +75,22 @@ router.get('/admin/invoices', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// Admin: all orders with user info, sorted by order number (used by Orders tab)
+router.get('/admin/all', requireAdmin, async (req, res) => {
+  try {
+    const orders = await PortalOrder.find({}, { invoicePdf: 0 })
+      .sort({ orderNumber: 1 })
+      .populate('userId', 'name company email')
+      .lean();
+    const result = orders.map(o => ({
+      ...o,
+      user:   o.userId || null,
+      userId: o.userId?._id?.toString() || null
+    }));
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // ── Admin: list orders (optionally filtered by userId) ──────────
 router.get('/admin', requireAdmin, async (req, res) => {
   try {
@@ -75,14 +103,19 @@ router.get('/admin', requireAdmin, async (req, res) => {
 // Admin: create order for a user
 router.post('/admin', requireAdmin, async (req, res) => {
   try {
-    const { userId, orderNumber, description, amount, status, notes, invoicePdf, invoiceName } = req.body;
+    const { userId, orderNumber, description, amount, status, notes, invoicePdf, invoiceName, orderDate } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });
-    const { orderDate } = req.body;
+    const effectiveDate = orderDate ? new Date(orderDate) : new Date();
+    if (orderNumber) {
+      const { start, end, label } = getFinancialYearRange(effectiveDate);
+      const dup = await PortalOrder.findOne({ orderNumber, createdAt: { $gte: start, $lte: end } });
+      if (dup) return res.status(409).json({ error: `Order number "${orderNumber}" already exists in FY ${label}.` });
+    }
     const order = await PortalOrder.create({
       userId, orderNumber: orderNumber || '', description: description || '',
       amount: parseFloat(amount) || 0, status: status || 'pending',
       notes: notes || '', invoicePdf: invoicePdf || null, invoiceName: invoiceName || null,
-      createdAt: orderDate ? new Date(orderDate) : new Date()
+      createdAt: effectiveDate
     });
     res.status(201).json({ id: order._id });
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -92,6 +125,15 @@ router.post('/admin', requireAdmin, async (req, res) => {
 router.put('/admin/:id', requireAdmin, async (req, res) => {
   try {
     const { orderNumber, description, amount, status, notes, invoicePdf, invoiceName, orderDate } = req.body;
+    if (orderNumber) {
+      const existing = await PortalOrder.findById(req.params.id).select('createdAt');
+      const refDate  = orderDate ? new Date(orderDate) : (existing?.createdAt || new Date());
+      const { start, end, label } = getFinancialYearRange(refDate);
+      const dup = await PortalOrder.findOne({
+        orderNumber, createdAt: { $gte: start, $lte: end }, _id: { $ne: req.params.id }
+      });
+      if (dup) return res.status(409).json({ error: `Order number "${orderNumber}" already exists in FY ${label}.` });
+    }
     const update = {
       orderNumber: orderNumber || '', description: description || '',
       amount: parseFloat(amount) || 0, status: status || 'pending',
