@@ -50,12 +50,12 @@ function toFlag(value) {
   return text === "1" || text.toLowerCase() === "true" ? "1" : "0";
 }
 
-// Handles both ISO ("2026-03-29T09:13:13.588Z") and Google Sheets ("4/8/2026 17:50:45") formats
+// Handles both ISO ("2026-03-29T09:13:13.588Z") and Google Sheets ("4/8/2026 17:50:45" or "7/14/2026 0:29:33") formats
 function parseMoment(value) {
   if (!value) return moment.invalid();
   return moment(
     value,
-    [moment.ISO_8601, "M/D/YYYY HH:mm:ss", "MM/DD/YYYY HH:mm:ss"],
+    [moment.ISO_8601, "M/D/YYYY H:mm:ss", "MM/DD/YYYY H:mm:ss"],
     true,
   );
 }
