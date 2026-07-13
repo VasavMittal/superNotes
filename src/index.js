@@ -6,7 +6,6 @@ const path         = require("path");
 
 const customerRoutes        = require("./routes/customerRoutes");
 const shiprocketRoutes      = require("./routes/shiprocketRoutes");
-const whatsappWebhookRoutes = require("./routes/whatsappWebhookRoutes");
 const quotationRoutes       = require("./routes/quotationRoutes");
 const authRoutes            = require("./routes/authRoutes");
 const portalUserRoutes      = require("./routes/portalUserRoutes");
@@ -24,7 +23,6 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.use("/api/customers",        customerRoutes);
 app.use("/api/shiprocket",       shiprocketRoutes);
-app.use("/api/whatsapp/webhook", whatsappWebhookRoutes);
 app.use("/api/quotations",       quotationRoutes);
 
 app.use("/api/auth",             authRoutes);
