@@ -16,7 +16,7 @@ const CAMPAIGN_NAME_BY_TEMPLATE = {
   address_reminder_72h: "reminder 72h",
 };
 
-async function sendViaAiSensy(to, templateName, params, headerMediaUrl) {
+async function sendViaAiSensy(to, templateName, headerMediaUrl) {
   const campaignName = CAMPAIGN_NAME_BY_TEMPLATE[templateName];
   if (!campaignName) {
     console.log(`❌ AiSensy Error: no campaign mapped for template "${templateName}"`);
@@ -28,7 +28,6 @@ async function sendViaAiSensy(to, templateName, params, headerMediaUrl) {
     campaignName,
     destination: to,
     userName: to,
-    templateParams: params,
   };
 
   if (headerMediaUrl) {
@@ -108,7 +107,7 @@ async function sendWhatsApp(to, templateName, params = [], headerMediaUrl = null
   if (PROVIDER === "meta") {
     return sendViaMeta(to, templateName, params, headerMediaUrl, headerMediaType);
   }
-  return sendViaAiSensy(to, templateName, params, headerMediaUrl);
+  return sendViaAiSensy(to, templateName, headerMediaUrl);
 }
 
 module.exports = { sendWhatsApp };
