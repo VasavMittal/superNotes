@@ -7,6 +7,22 @@ const PROVIDER = process.env.WHATSAPP_PROVIDER || "aisensy";
 const AISENSY_API_KEY = process.env.AISENSY_API_KEY;
 const AISENSY_API_URL = "https://backend.aisensy.com/campaign/t1/api/v2";
 
+// Normalizes to E.164 ("+91XXXXXXXXXX"). Bare 10-digit numbers get the
+// India country code assumed; anything else that doesn't resolve to a
+// 12-digit "91" number is treated as malformed rather than guessed at.
+function normalizeToE164(value) {
+  if (!value) return null;
+  const digits = value
+    .toString()
+    .replace(/[^0-9]/g, "")
+    .replace(/^0+/, "");
+  const withCountryCode = digits.length === 10 ? `91${digits}` : digits;
+  if (withCountryCode.length !== 12 || !withCountryCode.startsWith("91")) {
+    return null;
+  }
+  return `+${withCountryCode}`;
+}
+
 // Meta template name -> AiSensy campaign name (as created in the AiSensy dashboard)
 const CAMPAIGN_NAME_BY_TEMPLATE = {
   career_starter_kit_invitee: "starter invite",
@@ -104,10 +120,16 @@ async function sendViaMeta(to, templateName, params, headerMediaUrl, headerMedia
 }
 
 async function sendWhatsApp(to, templateName, params = [], headerMediaUrl = null, headerMediaType = "image") {
-  if (PROVIDER === "meta") {
-    return sendViaMeta(to, templateName, params, headerMediaUrl, headerMediaType);
+  const destination = normalizeToE164(to);
+  if (!destination) {
+    console.log(`❌ WhatsApp Error: invalid phone number "${to}" — expected a 10-digit number or +91XXXXXXXXXX`);
+    return false;
   }
-  return sendViaAiSensy(to, templateName, headerMediaUrl);
+
+  if (PROVIDER === "meta") {
+    return sendViaMeta(destination, templateName, params, headerMediaUrl, headerMediaType);
+  }
+  return sendViaAiSensy(destination, templateName, headerMediaUrl);
 }
 
 module.exports = { sendWhatsApp };
