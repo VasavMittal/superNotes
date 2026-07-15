@@ -7,9 +7,10 @@ const PROVIDER = process.env.WHATSAPP_PROVIDER || "aisensy";
 const AISENSY_API_KEY = process.env.AISENSY_API_KEY;
 const AISENSY_API_URL = "https://backend.aisensy.com/campaign/t1/api/v2";
 
-// Normalizes to E.164 ("+91XXXXXXXXXX"). Bare 10-digit numbers get the
-// India country code assumed; anything else that doesn't resolve to a
-// 12-digit "91" number is treated as malformed rather than guessed at.
+// Normalizes to E.164 ("+<countrycode><number>"). Bare 10-digit numbers are
+// assumed to be local India numbers (no country code entered) and get "91"
+// prepended; anything else is trusted to already include its country code
+// and is only checked for a plausible overall length.
 function normalizeToE164(value) {
   if (!value) return null;
   const digits = value
@@ -17,7 +18,7 @@ function normalizeToE164(value) {
     .replace(/[^0-9]/g, "")
     .replace(/^0+/, "");
   const withCountryCode = digits.length === 10 ? `91${digits}` : digits;
-  if (withCountryCode.length !== 12 || !withCountryCode.startsWith("91")) {
+  if (withCountryCode.length < 8 || withCountryCode.length > 15) {
     return null;
   }
   return `+${withCountryCode}`;
@@ -122,7 +123,7 @@ async function sendViaMeta(to, templateName, params, headerMediaUrl, headerMedia
 async function sendWhatsApp(to, templateName, params = [], headerMediaUrl = null, headerMediaType = "image") {
   const destination = normalizeToE164(to);
   if (!destination) {
-    console.log(`❌ WhatsApp Error: invalid phone number "${to}" — expected a 10-digit number or +91XXXXXXXXXX`);
+    console.log(`❌ WhatsApp Error: invalid phone number "${to}" — expected a 10-digit India number or a full number with country code`);
     return false;
   }
 
